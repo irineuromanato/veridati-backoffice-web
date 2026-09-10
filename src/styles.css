@@ -1,0 +1,153 @@
+:root {
+  /* Sobrescrita em tempo real pelo TemaContext, assim que a
+     organização tiver uma cor de destaque salva. */
+  --cor-primaria: #2946E0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #F5F6FA;
+  color: #2A2E3F;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, select {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+a {
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+.botao-primario {
+  background: var(--cor-primaria);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.botao-primario:disabled {
+  opacity: 0.5;
+}
+
+.botao-secundario {
+  background: #FFFFFF;
+  color: #2946E0;
+  border: 1.5px solid #2946E0;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Backoffice (2026-09-05) -- ação destrutiva/de risco (inativar
+   organização), vermelho pra se distinguir das ações normais. */
+.botao-perigo {
+  background: #B23A2E;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.botao-perigo:disabled {
+  opacity: 0.5;
+}
+
+.campo {
+  border: 1px solid #E1E3EF;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 14px;
+  width: 100%;
+  background: #FFFFFF;
+}
+
+.cartao {
+  background: #FFFFFF;
+  border: 1px solid #E1E3EF;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela th {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #8A8FA3;
+  padding: 10px 14px;
+  border-bottom: 1px solid #E1E3EF;
+}
+
+.tabela td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #F0F1F7;
+  font-size: 14px;
+}
+
+.tabela tr:hover td {
+  background: #F8F9FE;
+  cursor: pointer;
+}
+
+.selo {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #E7E9F5;
+  color: #2946E0;
+}
+
+.selo-inativo {
+  background: #F8DEDA;
+  color: #B23A2E;
+}
+
+.erro {
+  color: #D62828;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.overlay-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 46, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 28px;
+  width: 420px;
+  max-width: 92vw;
+  max-height: 88vh;
+  overflow-y: auto;
+}
