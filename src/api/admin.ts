@@ -102,8 +102,21 @@ export async function forcarJob(nome: string) {
   return resposta.data;
 }
 
+// Bloco 19 (2026-09-12) -- "log completo": últimas 20 execuções de um
+// job específico, não só a mais recente.
+export interface LogJob {
+  executado_em: string;
+  agiu: boolean;
+  detalhe: string | null;
+}
+
+export async function listarLogsDoJob(nome: string): Promise<LogJob[]> {
+  const resposta = await api.get(`/admin/jobs/${nome}/logs`);
+  return resposta.data;
+}
+
 export interface ConfiguracaoPlataforma {
-  job_ocorrencias_hora: string;
+  job_ocorrencias_horarios: string;
   notificacao_semanal_dia: number;
   notificacao_semanal_hora: string;
   dias_validade_exportacao: number;
@@ -115,7 +128,7 @@ export async function buscarConfiguracao(): Promise<ConfiguracaoPlataforma> {
 }
 
 export async function atualizarConfiguracao(dados: {
-  jobOcorrenciasHora?: string;
+  jobOcorrenciasHorarios?: string[];
   notificacaoSemanalDia?: number;
   notificacaoSemanalHora?: string;
   diasValidadeExportacao?: number;

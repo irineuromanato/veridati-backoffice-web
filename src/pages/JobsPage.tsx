@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { listarJobs, forcarJob, JobStatus } from '../api/admin';
+import { listarJobs, forcarJob, listarLogsDoJob, JobStatus, LogJob } from '../api/admin';
 
 function formatarDataHora(iso: string | null): string {
   if (!iso) return '—';
@@ -11,6 +11,11 @@ export default function JobsPage() {
   const [carregando, setCarregando] = useState(true);
   const [forcando, setForcando] = useState<string | null>(null);
   const [mensagem, setMensagem] = useState<{ jobNome: string; resultado: any } | null>(null);
+  // Bloco 19 (2026-09-12) -- "log completo": antes só dava pra ver a
+  // última tentativa de cada job, no card. Agora um botão abre as
+  // últimas 20 execuções daquele job específico.
+  const [historico, setHistorico] = useState<{ jobNome: string; logs: LogJob[] } | null>(null);
+  const [carregandoHistorico, setCarregandoHistorico] = useState(false);
 
   async function carregar() {
     const dados = await listarJobs();
@@ -36,6 +41,16 @@ export default function JobsPage() {
     }
   }
 
+  async function lidarComVerHistorico(nome: string) {
+    setCarregandoHistorico(true);
+    try {
+      const logs = await listarLogsDoJob(nome);
+      setHistorico({ jobNome: nome, logs });
+    } finally {
+      setCarregandoHistorico(false);
+    }
+  }
+
   if (carregando) {
     return <p style={{ color: '#8A8FA3' }}>Carregando...</p>;
   }
@@ -58,14 +73,24 @@ export default function JobsPage() {
               </h2>
               <p style={{ fontSize: 12, color: '#8A8FA3', margin: 0 }}>{job.descricao}</p>
             </div>
-            <button
-              className="botao-secundario"
-              onClick={() => lidarComForcar(job.nome)}
-              disabled={forcando === job.nome}
-              style={{ whiteSpace: 'nowrap', marginLeft: 12 }}
-            >
-              {forcando === job.nome ? 'Executando...' : 'Forçar execução'}
-            </button>
+            <div style={{ display: 'flex', gap: 8, marginLeft: 12 }}>
+              <button
+                className="botao-secundario"
+                onClick={() => lidarComVerHistorico(job.nome)}
+                disabled={carregandoHistorico}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                Ver histórico
+              </button>
+              <button
+                className="botao-secundario"
+                onClick={() => lidarComForcar(job.nome)}
+                disabled={forcando === job.nome}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                {forcando === job.nome ? 'Executando...' : 'Forçar execução'}
+              </button>
+            </div>
           </div>
 
           <div
@@ -120,6 +145,60 @@ export default function JobsPage() {
               )}
             </div>
             <button className="botao-primario" onClick={() => setMensagem(null)} style={{ width: '100%' }}>
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {historico && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50,
+          }}
+          onClick={() => setHistorico(null)}
+        >
+          <div className="cartao" style={{ width: 480, maxHeight: '70vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ marginTop: 0, color: '#1B2E8A' }}>Histórico — {historico.jobNome}</h2>
+            <p style={{ fontSize: 12, color: '#8A8FA3', marginTop: -8, marginBottom: 16 }}>
+              Últimas {historico.logs.length} verificações, mais recente primeiro.
+            </p>
+
+            {historico.logs.length === 0 ? (
+              <p style={{ color: '#8A8FA3', fontSize: 13 }}>Nenhum registro ainda.</p>
+            ) : (
+              historico.logs.map((log, indice) => (
+                <div
+                  key={indice}
+                  style={{
+                    display: 'flex', gap: 10, padding: '8px 0',
+                    borderTop: indice > 0 ? '1px solid #F0F1F7' : 'none',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 8, height: 8, borderRadius: 4, marginTop: 5, flexShrink: 0,
+                      background: log.agiu ? '#1E7A46' : '#C3C6D4',
+                    }}
+                  />
+                  <div>
+                    <div style={{ fontSize: 12, color: '#2A2E3F', fontWeight: 600 }}>
+                      {formatarDataHora(log.executado_em)}
+                    </div>
+                    {log.detalhe && (
+                      <div style={{ fontSize: 12, color: '#8A8FA3' }}>{log.detalhe}</div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+
+            <button
+              className="botao-primario"
+              onClick={() => setHistorico(null)}
+              style={{ width: '100%', marginTop: 16 }}
+            >
               Fechar
             </button>
           </div>
