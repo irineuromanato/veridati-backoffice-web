@@ -34,7 +34,7 @@ export default function Cabecalho() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 24px',
+        padding: '0 24px 0 0',
       }}
     >
       <button
@@ -42,7 +42,7 @@ export default function Cabecalho() {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 10,
+          height: '100%',
           background: 'none',
           border: 'none',
           cursor: 'pointer',
@@ -50,10 +50,16 @@ export default function Cabecalho() {
         }}
         title="Ir para Organizações"
       >
-        <img src="/favicon.png" alt="Veridati" style={{ width: 30, height: 30, borderRadius: 8 }} />
-        <span style={{ color: '#1B2E8A', fontWeight: 800, fontSize: 17 }}>Veridati</span>
-        <span style={{ color: '#D5D8E8', fontSize: 17 }}>·</span>
-        <span style={{ color: '#5B6072', fontWeight: 600, fontSize: 15 }}>Backoffice</span>
+        {/* Bloco 22 (2026-09-14): mesmo tratamento aplicado no
+            Account -- faixa com a largura exata do menu lateral
+            (220px), logo completo centralizado dentro dela. */}
+        <div style={{ width: 220, display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
+          <img src="/logo-veridati-header.png" alt="Veridati" style={{ height: 48, width: 'auto', maxWidth: 160, objectFit: 'contain' }} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 32 }}>
+          <span style={{ color: '#D5D8E8', fontSize: 17 }}>·</span>
+          <span style={{ color: '#5B6072', fontWeight: 600, fontSize: 15 }}>Backoffice</span>
+        </div>
       </button>
 
       <div style={{ position: 'relative' }}>
