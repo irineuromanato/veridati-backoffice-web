@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import MinhaContaModal from './MinhaContaModal';
 
 function iniciaisDoNome(nome: string | undefined): string {
   if (!nome) return '?';
@@ -19,6 +20,7 @@ export default function Cabecalho() {
   const { admin, sair } = useAuth();
   const navegar = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
+  const [minhaContaAberta, setMinhaContaAberta] = useState(false);
 
   function lidarComSair() {
     sair();
@@ -26,6 +28,7 @@ export default function Cabecalho() {
   }
 
   return (
+    <>
     <header
       style={{
         height: 64,
@@ -110,7 +113,7 @@ export default function Cabecalho() {
               <button
                 onClick={() => {
                   setMenuAberto(false);
-                  navegar('/minha-conta');
+                  setMinhaContaAberta(true);
                 }}
                 style={estiloItemMenu}
               >
@@ -124,6 +127,9 @@ export default function Cabecalho() {
         )}
       </div>
     </header>
+
+    {minhaContaAberta && <MinhaContaModal aoFechar={() => setMinhaContaAberta(false)} />}
+    </>
   );
 }
 

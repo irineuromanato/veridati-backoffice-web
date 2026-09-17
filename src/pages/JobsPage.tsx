@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { listarJobs, forcarJob, listarLogsDoJob, JobStatus, LogJob } from '../api/admin';
+import { listarJobs, forcarJob, listarLogsDoJob, definirHabilitadoJob, JobStatus, LogJob } from '../api/admin';
 
 function formatarDataHora(iso: string | null): string {
   if (!iso) return '—';
@@ -10,7 +10,9 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<JobStatus[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [forcando, setForcando] = useState<string | null>(null);
+  const [alternando, setAlternando] = useState<string | null>(null);
   const [mensagem, setMensagem] = useState<{ jobNome: string; resultado: any } | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
   // Bloco 19 (2026-09-12) -- "log completo": antes só dava pra ver a
   // última tentativa de cada job, no card. Agora um botão abre as
   // últimas 20 execuções daquele job específico.
@@ -28,6 +30,7 @@ export default function JobsPage() {
   }, []);
 
   async function lidarComForcar(nome: string) {
+    setErro(null);
     setForcando(nome);
     try {
       const resultado = await forcarJob(nome);
@@ -36,8 +39,27 @@ export default function JobsPage() {
       // o resultado formatado, não o JSON cru.
       setMensagem({ jobNome: nome, resultado });
       await carregar();
+    } catch (e: any) {
+      setErro(e?.response?.data?.message || 'Não foi possível forçar a execução.');
     } finally {
       setForcando(null);
+    }
+  }
+
+  // Bloco A11 (2026-09-16) -- "parar um job" de verdade: liga/desliga o
+  // agendamento automático dele. Igual ao Task Scheduler do Windows,
+  // um job pausado também não pode ser forçado manualmente (backend
+  // recusa) -- reative primeiro.
+  async function lidarComAlternarHabilitado(job: JobStatus) {
+    setErro(null);
+    setAlternando(job.nome);
+    try {
+      const atualizados = await definirHabilitadoJob(job.nome, !job.habilitado);
+      setJobs(atualizados);
+    } catch (e: any) {
+      setErro(e?.response?.data?.message || 'Não foi possível alterar o job.');
+    } finally {
+      setAlternando(null);
     }
   }
 
@@ -59,21 +81,41 @@ export default function JobsPage() {
     <div>
       <h1 style={{ color: '#1B2E8A', marginTop: 0 }}>Jobs</h1>
       <p style={{ color: '#8A8FA3', fontSize: 13, marginTop: -8, marginBottom: 20 }}>
-        Os 3 jobs que rodam sozinhos no backend. "Última verificação" é toda vez que o job rodou
-        (a cada 10 minutos); "última ação" é a última vez que ele fez de verdade alguma coisa (gerou
-        ocorrência, notificou atraso, mandou resumo) — nem toda verificação vira ação.
+        Os 5 jobs que rodam sozinhos no backend. "Última verificação" é toda vez que o job rodou;
+        "última ação" é a última vez que ele fez de verdade alguma coisa (gerou ocorrência, notificou
+        atraso, mandou resumo) — nem toda verificação vira ação. Pausar um job desliga só o
+        agendamento automático dele -- os outros continuam rodando normalmente.
       </p>
 
+      {erro && <p className="erro" style={{ maxWidth: 640 }}>{erro}</p>}
+
       {jobs.map((job) => (
-        <div key={job.nome} className="cartao" style={{ maxWidth: 640, marginBottom: 16 }}>
+        <div
+          key={job.nome}
+          className="cartao"
+          style={{ maxWidth: 640, marginBottom: 16, opacity: job.habilitado ? 1 : 0.7 }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <h2 style={{ marginTop: 0, marginBottom: 4, fontSize: 15, color: '#1B2E8A' }}>
-                {job.titulo}
-              </h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h2 style={{ marginTop: 0, marginBottom: 4, fontSize: 15, color: '#1B2E8A' }}>
+                  {job.titulo}
+                </h2>
+                <span className={`selo ${!job.habilitado ? 'selo-inativo' : ''}`}>
+                  {job.habilitado ? 'Ativo' : 'Pausado'}
+                </span>
+              </div>
               <p style={{ fontSize: 12, color: '#8A8FA3', margin: 0 }}>{job.descricao}</p>
             </div>
-            <div style={{ display: 'flex', gap: 8, marginLeft: 12 }}>
+            <div style={{ display: 'flex', gap: 8, marginLeft: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+              <button
+                className={job.habilitado ? 'botao-perigo' : 'botao-primario'}
+                onClick={() => lidarComAlternarHabilitado(job)}
+                disabled={alternando === job.nome}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                {alternando === job.nome ? 'Aguarde...' : job.habilitado ? 'Pausar' : 'Reativar'}
+              </button>
               <button
                 className="botao-secundario"
                 onClick={() => lidarComVerHistorico(job.nome)}
@@ -85,7 +127,8 @@ export default function JobsPage() {
               <button
                 className="botao-secundario"
                 onClick={() => lidarComForcar(job.nome)}
-                disabled={forcando === job.nome}
+                disabled={forcando === job.nome || !job.habilitado}
+                title={job.habilitado ? undefined : 'Reative o job antes de forçar a execução.'}
                 style={{ whiteSpace: 'nowrap' }}
               >
                 {forcando === job.nome ? 'Executando...' : 'Forçar execução'}
@@ -109,7 +152,9 @@ export default function JobsPage() {
             </div>
             <div>
               <div style={{ fontSize: 10, color: '#8A8FA3', textTransform: 'uppercase' }}>Próxima prevista</div>
-              <div style={{ fontSize: 12, color: '#2A2E3F' }}>{formatarDataHora(job.proximaExecucaoPrevista)}</div>
+              <div style={{ fontSize: 12, color: '#2A2E3F' }}>
+                {job.habilitado ? formatarDataHora(job.proximaExecucaoPrevista) : 'Pausado'}
+              </div>
             </div>
           </div>
 

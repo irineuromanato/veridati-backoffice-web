@@ -7,6 +7,7 @@ interface AuthContextValor {
   carregando: boolean;
   entrar: (email: string, senha: string) => Promise<void>;
   sair: () => void;
+  atualizarAdminLocal: (patch: Partial<AdminLogado>) => void;
 }
 
 const AuthContext = createContext<AuthContextValor | undefined>(undefined);
@@ -43,8 +44,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAdmin(null);
   }
 
+  // Depois que o admin edita o próprio nome em "Minha conta", isso
+  // reflete na hora no avatar e no cabeçalho, sem precisar logar de novo.
+  function atualizarAdminLocal(patch: Partial<AdminLogado>) {
+    setAdmin((anterior) => {
+      if (!anterior) return anterior;
+      const atualizado = { ...anterior, ...patch };
+      localStorage.setItem(CHAVE_ADMIN, JSON.stringify(atualizado));
+      return atualizado;
+    });
+  }
+
   return (
-    <AuthContext.Provider value={{ admin, carregando, entrar, sair }}>
+    <AuthContext.Provider value={{ admin, carregando, entrar, sair, atualizarAdminLocal }}>
       {children}
     </AuthContext.Provider>
   );

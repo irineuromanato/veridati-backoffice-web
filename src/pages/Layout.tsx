@@ -56,6 +56,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <NavLink to="/jobs" style={linkEstilo}>
             Jobs
           </NavLink>
+          <NavLink to="/emails" style={linkEstilo}>
+            E-mails
+          </NavLink>
           <NavLink to="/configuracoes" style={linkEstilo}>
             Configurações
           </NavLink>

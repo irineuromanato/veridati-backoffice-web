@@ -7,8 +7,8 @@ import OrganizacoesPage from './pages/OrganizacoesPage';
 import AdministradoresPage from './pages/AdministradoresPage';
 import ExportacoesPage from './pages/ExportacoesPage';
 import JobsPage from './pages/JobsPage';
+import EmailsPage from './pages/EmailsPage';
 import ConfiguracoesPage from './pages/ConfiguracoesPage';
-import MinhaContaPage from './pages/MinhaContaPage';
 
 function RotaProtegida({ children }: { children: React.ReactNode }) {
   const { admin, carregando } = useAuth();
@@ -34,8 +34,8 @@ export default function App() {
                     <Route path="/administradores" element={<AdministradoresPage />} />
                     <Route path="/exportacoes" element={<ExportacoesPage />} />
                     <Route path="/jobs" element={<JobsPage />} />
+                    <Route path="/emails" element={<EmailsPage />} />
                     <Route path="/configuracoes" element={<ConfiguracoesPage />} />
-                    <Route path="/minha-conta" element={<MinhaContaPage />} />
                   </Routes>
                 </Layout>
               </RotaProtegida>

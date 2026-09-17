@@ -75,7 +75,6 @@ export async function buscarMinhaConta(): Promise<AdminLogado> {
 
 export async function atualizarMinhaConta(dados: {
   nome?: string;
-  senhaAtual?: string;
   senhaNova?: string;
 }): Promise<AdminLogado> {
   const resposta = await api.patch('/admin/minha-conta', dados);
@@ -86,6 +85,7 @@ export interface JobStatus {
   nome: string;
   titulo: string;
   descricao: string;
+  habilitado: boolean;
   ultimaVerificacao: string | null;
   ultimaAcao: string | null;
   ultimoDetalhe: string | null;
@@ -99,6 +99,31 @@ export async function listarJobs(): Promise<JobStatus[]> {
 
 export async function forcarJob(nome: string) {
   const resposta = await api.post(`/admin/jobs/${nome}/forcar`);
+  return resposta.data;
+}
+
+export async function definirHabilitadoJob(nome: string, habilitado: boolean): Promise<JobStatus[]> {
+  await api.patch(`/admin/jobs/${nome}/habilitado`, { habilitado });
+  return listarJobs();
+}
+
+// Bloco A02 (2026-09-17) -- catálogo de tipos de e-mail de aviso, com
+// liga/desliga global (afeta todas as organizações).
+export interface TipoEmail {
+  tipo: string;
+  titulo: string;
+  descricao: string;
+  supervisorRecebe: boolean;
+  habilitado: boolean;
+}
+
+export async function listarTiposEmail(): Promise<TipoEmail[]> {
+  const resposta = await api.get('/admin/tipos-email');
+  return resposta.data;
+}
+
+export async function definirHabilitadoTipoEmail(tipo: string, habilitado: boolean): Promise<TipoEmail[]> {
+  const resposta = await api.patch(`/admin/tipos-email/${tipo}/habilitado`, { habilitado });
   return resposta.data;
 }
 
@@ -152,6 +177,18 @@ export async function listarAdmins(): Promise<Administrador[]> {
 export async function criarAdmin(dados: { nome: string; email: string; senha: string }): Promise<Administrador> {
   const resposta = await api.post('/admin/administradores', dados);
   return resposta.data;
+}
+
+export async function atualizarAdmin(
+  id: string,
+  dados: { nome?: string; email?: string; senha?: string },
+): Promise<Administrador> {
+  const resposta = await api.patch(`/admin/administradores/${id}`, dados);
+  return resposta.data;
+}
+
+export async function excluirAdmin(id: string): Promise<void> {
+  await api.delete(`/admin/administradores/${id}`);
 }
 
 // Bloco 12 (2026-09-07) -- painel de visibilidade de exportações de
