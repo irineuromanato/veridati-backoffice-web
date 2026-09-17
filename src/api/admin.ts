@@ -210,3 +210,144 @@ export async function listarExportacoesTodas(): Promise<{
   const resposta = await api.get('/admin/exportacoes');
   return resposta.data;
 }
+
+// Bloco A01 (2026-09-17), Fase 1 -- catálogo de planos. Nome/frase de
+// limite não vêm do backend -- só números/booleanos; a tela monta o
+// texto (ver PlanosPage.tsx).
+export interface PrecoPlano {
+  id: string;
+  plano_id: string;
+  moeda: 'BRL' | 'EUR' | 'USD';
+  periodicidade: 'MENSAL' | 'ANUAL';
+  valor: string;
+  stripe_price_id: string | null;
+}
+export interface Plano {
+  id: string;
+  codigo: string;
+  limite_localidades: number | null;
+  limite_pessoas: number | null;
+  limite_checklists_aprovados_mes: number | null;
+  limite_tarefas_finalizadas_mes: number | null;
+  limite_fotos_por_pergunta: number | null;
+  tem_mapa: boolean;
+  nivel_relatorios: 'NENHUM' | 'LIMITADO' | 'COMPLETO';
+  nivel_alertas_email: 'NENHUM' | 'BASICO' | 'COMPLETO';
+  ativo: boolean;
+  ordem: number;
+  precos: PrecoPlano[];
+}
+
+export async function listarPlanos(): Promise<Plano[]> {
+  const resposta = await api.get('/admin/planos');
+  return resposta.data;
+}
+
+export async function criarPlano(dados: {
+  codigo: string;
+  limiteLocalidades: number | null;
+  limitePessoas: number | null;
+  limiteChecklistsAprovadosMes: number | null;
+  limiteTarefasFinalizadasMes: number | null;
+  limiteFotosPorPergunta: number | null;
+  temMapa: boolean;
+  nivelRelatorios: string;
+  nivelAlertasEmail: string;
+}): Promise<{ id: string }> {
+  const resposta = await api.post('/admin/planos', dados);
+  return resposta.data;
+}
+
+export async function atualizarPlano(
+  id: string,
+  dados: Partial<{
+    limiteLocalidades: number | null;
+    limitePessoas: number | null;
+    limiteChecklistsAprovadosMes: number | null;
+    limiteTarefasFinalizadasMes: number | null;
+    limiteFotosPorPergunta: number | null;
+    temMapa: boolean;
+    nivelRelatorios: string;
+    nivelAlertasEmail: string;
+    ativo: boolean;
+  }>,
+) {
+  const resposta = await api.patch(`/admin/planos/${id}`, dados);
+  return resposta.data;
+}
+
+export async function atualizarPrecoPlano(id: string, moeda: string, periodicidade: string, valor: number) {
+  const resposta = await api.patch(`/admin/planos/${id}/preco`, { moeda, periodicidade, valor });
+  return resposta.data;
+}
+
+export interface ConversaoPlano {
+  organizacao_id: string;
+  organizacao_nome: string;
+  inicio_em: string;
+  codigo_novo: string;
+  codigo_anterior: string | null;
+}
+
+export async function conversoesPlanos(): Promise<{ upgrades: ConversaoPlano[]; downgrades: ConversaoPlano[] }> {
+  const resposta = await api.get('/admin/planos/conversoes');
+  return resposta.data;
+}
+
+export interface HistoricoPlanoItem {
+  id: string;
+  codigo: string;
+  moeda: string | null;
+  periodicidade: string | null;
+  origem: string;
+  motivo: string | null;
+  alterado_por_nome: string | null;
+  inicio_em: string;
+  fim_em: string | null;
+}
+
+export async function trocarPlanoOrganizacao(organizacaoId: string, planoId: string, motivo: string) {
+  const resposta = await api.post(`/admin/organizacoes/${organizacaoId}/plano`, { planoId, motivo });
+  return resposta.data;
+}
+
+export async function historicoPlanoOrganizacao(organizacaoId: string): Promise<HistoricoPlanoItem[]> {
+  const resposta = await api.get(`/admin/organizacoes/${organizacaoId}/plano/historico`);
+  return resposta.data;
+}
+
+// Bloco A11a / Sub-bloco 60 (2026-09-17) -- Dashboard do Backoffice.
+// Campos em snake_case espelhando o JSON de `GET /admin/dashboard`,
+// como todo o resto deste arquivo.
+//
+// Os dois campos de espaço chegam em BYTES, não formatados: quem decide
+// como exibir (KB/MB/GB) é a tela, não a API.
+export interface MetricaRanking {
+  organizacao_id: string;
+  organizacao_nome: string;
+  total: number;
+}
+
+export interface MetricasPlataforma {
+  totais: {
+    organizacoes: number;
+    checklists: number;
+    tarefas: number;
+    locais: number;
+    equipes: number;
+    espaco_fotos_bytes: number;
+    espaco_personalizacao_bytes: number;
+  };
+  planos: {
+    gratuitos: number;
+    pagos: number;
+  };
+  top_espaco: MetricaRanking[];
+  top_checklists: MetricaRanking[];
+  top_tarefas: MetricaRanking[];
+}
+
+export async function buscarMetricas(): Promise<MetricasPlataforma> {
+  const resposta = await api.get('/admin/dashboard');
+  return resposta.data;
+}

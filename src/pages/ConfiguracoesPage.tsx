@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { buscarConfiguracao, atualizarConfiguracao } from '../api/admin';
+import { useI18n } from '../i18n/I18nContext';
 
-const diasSemana = [
-  { valor: 1, rotulo: 'Segunda-feira' },
-  { valor: 2, rotulo: 'Terça-feira' },
-  { valor: 3, rotulo: 'Quarta-feira' },
-  { valor: 4, rotulo: 'Quinta-feira' },
-  { valor: 5, rotulo: 'Sexta-feira' },
-  { valor: 6, rotulo: 'Sábado' },
-  { valor: 7, rotulo: 'Domingo' },
-];
+// Cada numero e' o valor que o backend grava (1 = segunda ... 7 = domingo);
+// o rotulo visivel vem do dicionario (`configuracoes.dia.N`).
+const diasSemana = [1, 2, 3, 4, 5, 6, 7];
 
 export default function ConfiguracoesPage() {
+  const { t } = useI18n();
   // Bloco 19 (2026-09-12): virou lista -- um horário só significava
   // que quem abre checklist de manhã ficava sem ocorrência gerada até
   // a noite anterior, se o horário configurado fosse tarde.
@@ -68,22 +64,20 @@ export default function ConfiguracoesPage() {
   }
 
   if (carregando) {
-    return <p style={{ color: '#8A8FA3' }}>Carregando...</p>;
+    return <p style={{ color: '#8A8FA3' }}>{t('comum.carregando')}</p>;
   }
 
   return (
     <div>
-      <h1 style={{ color: '#1B2E8A', marginTop: 0 }}>Configurações</h1>
+      <h1 style={{ color: '#1B2E8A', marginTop: 0 }}>{t('configuracoes.titulo')}</h1>
       <p style={{ color: '#8A8FA3', fontSize: 13, marginTop: -8, marginBottom: 20 }}>
-        Jobs e notificações válidos para toda a plataforma.
+        {t('configuracoes.subtitulo')}
       </p>
 
       <div className="cartao" style={{ maxWidth: 480, marginBottom: 20 }}>
-        <h2 style={{ marginTop: 0, fontSize: 15, color: '#1B2E8A' }}>Geração de ocorrências</h2>
+        <h2 style={{ marginTop: 0, fontSize: 15, color: '#1B2E8A' }}>{t('configuracoes.geracaoOcorrencias')}</h2>
         <p style={{ fontSize: 12, color: '#8A8FA3', marginTop: 0, marginBottom: 12 }}>
-          Horários em que o job roda pra gerar as ocorrências de checklist do dia. Pode ter mais
-          de um — útil se seus locais têm checklists que abrem em turnos bem diferentes (de manhã
-          e à tarde, por exemplo).
+          {t('configuracoes.geracaoOcorrenciasDesc')}
         </p>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
@@ -103,7 +97,7 @@ export default function ConfiguracoesPage() {
                   background: 'none', border: 'none', cursor: jobHorarios.length <= 1 ? 'default' : 'pointer',
                   color: jobHorarios.length <= 1 ? '#C3C6D4' : '#B23A2E', fontWeight: 700, padding: 0, lineHeight: 1,
                 }}
-                title="Remover este horário"
+                title={t('configuracoes.removerHorario')}
               >
                 ×
               </button>
@@ -113,7 +107,7 @@ export default function ConfiguracoesPage() {
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
           <div>
-            <label style={{ fontSize: 12, color: '#5B6072' }}>Adicionar horário</label>
+            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('configuracoes.adicionarHorario')}</label>
             <input
               type="time"
               className="campo"
@@ -123,19 +117,19 @@ export default function ConfiguracoesPage() {
             />
           </div>
           <button className="botao-secundario" onClick={adicionarHorario}>
-            Adicionar
+            {t('configuracoes.adicionar')}
           </button>
         </div>
       </div>
 
       <div className="cartao" style={{ maxWidth: 480, marginBottom: 20 }}>
-        <h2 style={{ marginTop: 0, fontSize: 15, color: '#1B2E8A' }}>Resumo semanal por e-mail</h2>
+        <h2 style={{ marginTop: 0, fontSize: 15, color: '#1B2E8A' }}>{t('configuracoes.resumoSemanal')}</h2>
         <p style={{ fontSize: 12, color: '#8A8FA3', marginTop: 0, marginBottom: 12 }}>
-          Dia e horário do e-mail de resumo (checklists atrasados e concluídos).
+          {t('configuracoes.resumoSemanalDesc')}
         </p>
         <div style={{ display: 'flex', gap: 12 }}>
           <div>
-            <label style={{ fontSize: 12, color: '#5B6072' }}>Dia da semana</label>
+            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('configuracoes.diaDaSemana')}</label>
             <select
               className="campo"
               value={notifDia}
@@ -143,12 +137,12 @@ export default function ConfiguracoesPage() {
               style={{ marginTop: 4 }}
             >
               {diasSemana.map((d) => (
-                <option key={d.valor} value={d.valor}>{d.rotulo}</option>
+                <option key={d} value={d}>{t(`configuracoes.dia.${d}`)}</option>
               ))}
             </select>
           </div>
           <div>
-            <label style={{ fontSize: 12, color: '#5B6072' }}>Horário</label>
+            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('configuracoes.horario')}</label>
             <input
               type="time"
               className="campo"
@@ -163,12 +157,11 @@ export default function ConfiguracoesPage() {
       {/* Bloco 11 (2026-09-06) -- validade do link de exportação de
           dados, vale pra todas as organizações. */}
       <div className="cartao" style={{ maxWidth: 480, marginBottom: 20 }}>
-        <h2 style={{ marginTop: 0, fontSize: 15, color: '#1B2E8A' }}>Exportação de dados</h2>
+        <h2 style={{ marginTop: 0, fontSize: 15, color: '#1B2E8A' }}>{t('configuracoes.exportacaoDados')}</h2>
         <p style={{ fontSize: 12, color: '#8A8FA3', marginTop: 0, marginBottom: 12 }}>
-          Por quantos dias o link de download de uma exportação de dados (Bloco 11) fica
-          válido antes de ser apagado automaticamente pela limpeza diária.
+          {t('configuracoes.exportacaoDadosDesc')}
         </p>
-        <label style={{ fontSize: 12, color: '#5B6072' }}>Dias de validade</label>
+        <label style={{ fontSize: 12, color: '#5B6072' }}>{t('configuracoes.diasDeValidade')}</label>
         <input
           type="number"
           min={1}
@@ -180,9 +173,9 @@ export default function ConfiguracoesPage() {
         />
       </div>
 
-      {sucesso && <p style={{ color: '#1E7A46', fontSize: 13, marginBottom: 12 }}>Configuração salva.</p>}
+      {sucesso && <p style={{ color: '#1E7A46', fontSize: 13, marginBottom: 12 }}>{t('configuracoes.sucesso')}</p>}
       <button className="botao-primario" onClick={lidarComSalvar} disabled={salvando}>
-        {salvando ? 'Salvando...' : 'Salvar configuração'}
+        {salvando ? t('comum.salvando') : t('configuracoes.salvarConfiguracao')}
       </button>
     </div>
   );

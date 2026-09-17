@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { listarAdmins, criarAdmin, atualizarAdmin, excluirAdmin, Administrador } from '../api/admin';
 import { useAuth } from '../auth/AuthContext';
 import IconeAcao from '../components/IconeAcao';
+import { useI18n } from '../i18n/I18nContext';
 
 // Bloco 10 (2026-09-06) -- criar mais administradores do Backoffice.
 // Qualquer admin autenticado pode criar outro, sem hierarquia entre
@@ -9,6 +10,7 @@ import IconeAcao from '../components/IconeAcao';
 // setup, se o banco começar sem nenhum admin (ver admin.service.ts).
 export default function AdministradoresPage() {
   const { admin } = useAuth();
+  const { t } = useI18n();
   const [admins, setAdmins] = useState<Administrador[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [modalAberto, setModalAberto] = useState<'novo' | Administrador | null>(null);
@@ -26,40 +28,39 @@ export default function AdministradoresPage() {
 
   async function lidarComExcluir(alvo: Administrador, evento: React.MouseEvent) {
     evento.stopPropagation();
-    if (!window.confirm(`Excluir "${alvo.nome}"? Essa ação não pode ser desfeita.`)) {
+    if (!window.confirm(t('administradores.confirmarExcluir'))) {
       return;
     }
     try {
       await excluirAdmin(alvo.id);
       carregar();
     } catch (e: any) {
-      window.alert(e?.response?.data?.message || 'Não foi possível excluir este administrador.');
+      window.alert(e?.response?.data?.message || t('administradores.erroExcluir'));
     }
   }
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h1 style={{ margin: 0, color: '#1B2E8A' }}>Administradores</h1>
+        <h1 style={{ margin: 0, color: '#1B2E8A' }}>{t('administradores.titulo')}</h1>
         <button className="botao-primario" onClick={() => setModalAberto('novo')}>
-          + Novo administrador
+          {t('administradores.novo')}
         </button>
       </div>
       <p style={{ color: '#8A8FA3', fontSize: 13, marginTop: -12, marginBottom: 20 }}>
-        Pessoas com acesso ao Backoffice inteiro -- organizações, jobs, configurações. Sem
-        hierarquia entre eles: qualquer um pode criar, editar ou excluir outro (menos a si mesmo).
+        {t('administradores.subtitulo')}
       </p>
 
       <div className="cartao" style={{ padding: 0 }}>
         {carregando ? (
-          <p style={{ padding: 24, color: '#8A8FA3' }}>Carregando...</p>
+          <p style={{ padding: 24, color: '#8A8FA3' }}>{t('comum.carregando')}</p>
         ) : (
           <table className="tabela">
             <thead>
               <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Criado em</th>
+                <th>{t('administradores.colNome')}</th>
+                <th>{t('administradores.colEmail')}</th>
+                <th>{t('administradores.colCriadoEm')}</th>
                 <th style={{ width: 70 }} />
               </tr>
             </thead>
@@ -71,9 +72,9 @@ export default function AdministradoresPage() {
                   <td style={{ color: '#8A8FA3' }}>{new Date(a.criado_em).toLocaleDateString()}</td>
                   <td>
                     <div style={{ display: 'flex', gap: 2 }}>
-                      <IconeAcao tipo="editar" titulo="Editar" onClick={() => setModalAberto(a)} />
+                      <IconeAcao tipo="editar" titulo={t('comum.editar')} onClick={() => setModalAberto(a)} />
                       {a.id !== admin?.id && (
-                        <IconeAcao tipo="remover" titulo="Excluir" onClick={(e) => lidarComExcluir(a, e)} />
+                        <IconeAcao tipo="remover" titulo={t('comum.excluir')} onClick={(e) => lidarComExcluir(a, e)} />
                       )}
                     </div>
                   </td>
@@ -107,6 +108,7 @@ function ModalAdmin({
   aoFechar: () => void;
   aoSalvar: () => void;
 }) {
+  const { t } = useI18n();
   const [nome, setNome] = useState(admin?.nome ?? '');
   const [email, setEmail] = useState(admin?.email ?? '');
   const [senha, setSenha] = useState('');
@@ -128,7 +130,7 @@ function ModalAdmin({
       }
       aoSalvar();
     } catch (e: any) {
-      setErro(e?.response?.data?.message || 'Não foi possível salvar.');
+      setErro(e?.response?.data?.message || t('administradores.erroSalvar'));
     } finally {
       setSalvando(false);
     }
@@ -147,16 +149,16 @@ function ModalAdmin({
       onClick={aoFechar}
     >
       <div className="cartao" style={{ width: 400 }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ marginTop: 0 }}>{admin ? 'Editar administrador' : 'Novo administrador'}</h2>
+        <h2 style={{ marginTop: 0 }}>{admin ? t('administradores.editarTitulo') : t('administradores.novoTitulo')}</h2>
 
-        <label style={{ fontSize: 12, color: '#5B6072' }}>Nome</label>
+        <label style={{ fontSize: 12, color: '#5B6072' }}>{t('administradores.colNome')}</label>
         <input className="campo" value={nome} onChange={(e) => setNome(e.target.value)} style={{ width: '100%', marginTop: 4, marginBottom: 12 }} />
 
-        <label style={{ fontSize: 12, color: '#5B6072' }}>E-mail</label>
+        <label style={{ fontSize: 12, color: '#5B6072' }}>{t('administradores.colEmail')}</label>
         <input className="campo" type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', marginTop: 4, marginBottom: 12 }} />
 
         <label style={{ fontSize: 12, color: '#5B6072' }}>
-          {admin ? 'Nova senha (deixe em branco pra manter a atual)' : 'Senha (mínimo 8 caracteres)'}
+          {admin ? t('administradores.senhaManter') : t('administradores.senhaMinimo')}
         </label>
         <input className="campo" type="password" value={senha} onChange={(e) => setSenha(e.target.value)} style={{ width: '100%', marginTop: 4, marginBottom: 16 }} />
 
@@ -164,7 +166,7 @@ function ModalAdmin({
 
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="botao-secundario" onClick={aoFechar} disabled={salvando} style={{ flex: 1 }}>
-            Cancelar
+            {t('comum.cancelar')}
           </button>
           <button
             className="botao-primario"
@@ -172,7 +174,7 @@ function ModalAdmin({
             disabled={!podeSalvar || salvando}
             style={{ flex: 1 }}
           >
-            {salvando ? 'Salvando...' : admin ? 'Salvar' : 'Criar'}
+            {salvando ? t('comum.salvando') : admin ? t('comum.salvar') : t('comum.criar')}
           </button>
         </div>
       </div>

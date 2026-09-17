@@ -1,12 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { listarJobs, forcarJob, listarLogsDoJob, definirHabilitadoJob, JobStatus, LogJob } from '../api/admin';
+import { useI18n } from '../i18n/I18nContext';
 
-function formatarDataHora(iso: string | null): string {
+// O idioma da interface vira o locale das datas (mesmo mapa do Dashboard).
+const LOCAIS_POR_IDIOMA: Record<string, string> = {
+  PT: 'pt-PT',
+  PT_BR: 'pt-BR',
+  EN: 'en-US',
+  IT: 'it-IT',
+  ES: 'es-ES',
+  FR: 'fr-FR',
+};
+
+function formatarDataHora(iso: string | null, locale: string): string {
   if (!iso) return '—';
-  return new Date(iso).toLocaleString('pt-BR');
+  return new Date(iso).toLocaleString(locale);
 }
 
 export default function JobsPage() {
+  const { idioma, t } = useI18n();
+  const locale = LOCAIS_POR_IDIOMA[idioma] ?? 'pt-BR';
   const [jobs, setJobs] = useState<JobStatus[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [forcando, setForcando] = useState<string | null>(null);
@@ -40,7 +53,7 @@ export default function JobsPage() {
       setMensagem({ jobNome: nome, resultado });
       await carregar();
     } catch (e: any) {
-      setErro(e?.response?.data?.message || 'Não foi possível forçar a execução.');
+      setErro(e?.response?.data?.message || t('jobs.erroForcar'));
     } finally {
       setForcando(null);
     }
@@ -57,7 +70,7 @@ export default function JobsPage() {
       const atualizados = await definirHabilitadoJob(job.nome, !job.habilitado);
       setJobs(atualizados);
     } catch (e: any) {
-      setErro(e?.response?.data?.message || 'Não foi possível alterar o job.');
+      setErro(e?.response?.data?.message || t('jobs.erroAlterar'));
     } finally {
       setAlternando(null);
     }
@@ -74,17 +87,14 @@ export default function JobsPage() {
   }
 
   if (carregando) {
-    return <p style={{ color: '#8A8FA3' }}>Carregando...</p>;
+    return <p style={{ color: '#8A8FA3' }}>{t('comum.carregando')}</p>;
   }
 
   return (
     <div>
-      <h1 style={{ color: '#1B2E8A', marginTop: 0 }}>Jobs</h1>
+      <h1 style={{ color: '#1B2E8A', marginTop: 0 }}>{t('jobs.titulo')}</h1>
       <p style={{ color: '#8A8FA3', fontSize: 13, marginTop: -8, marginBottom: 20 }}>
-        Os 5 jobs que rodam sozinhos no backend. "Última verificação" é toda vez que o job rodou;
-        "última ação" é a última vez que ele fez de verdade alguma coisa (gerou ocorrência, notificou
-        atraso, mandou resumo) — nem toda verificação vira ação. Pausar um job desliga só o
-        agendamento automático dele -- os outros continuam rodando normalmente.
+        {t('jobs.subtitulo')}
       </p>
 
       {erro && <p className="erro" style={{ maxWidth: 640 }}>{erro}</p>}
@@ -99,13 +109,13 @@ export default function JobsPage() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <h2 style={{ marginTop: 0, marginBottom: 4, fontSize: 15, color: '#1B2E8A' }}>
-                  {job.titulo}
+                  {t(`jobs.titulo.${job.nome}`)}
                 </h2>
                 <span className={`selo ${!job.habilitado ? 'selo-inativo' : ''}`}>
-                  {job.habilitado ? 'Ativo' : 'Pausado'}
+                  {job.habilitado ? t('comum.ativo') : t('jobs.pausado')}
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: '#8A8FA3', margin: 0 }}>{job.descricao}</p>
+              <p style={{ fontSize: 12, color: '#8A8FA3', margin: 0 }}>{t(`jobs.descricao.${job.nome}`)}</p>
             </div>
             <div style={{ display: 'flex', gap: 8, marginLeft: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               <button
@@ -114,7 +124,7 @@ export default function JobsPage() {
                 disabled={alternando === job.nome}
                 style={{ whiteSpace: 'nowrap' }}
               >
-                {alternando === job.nome ? 'Aguarde...' : job.habilitado ? 'Pausar' : 'Reativar'}
+                {alternando === job.nome ? t('comum.aguarde') : job.habilitado ? t('jobs.pausar') : t('jobs.reativar')}
               </button>
               <button
                 className="botao-secundario"
@@ -122,16 +132,16 @@ export default function JobsPage() {
                 disabled={carregandoHistorico}
                 style={{ whiteSpace: 'nowrap' }}
               >
-                Ver histórico
+                {t('jobs.verHistorico')}
               </button>
               <button
                 className="botao-secundario"
                 onClick={() => lidarComForcar(job.nome)}
                 disabled={forcando === job.nome || !job.habilitado}
-                title={job.habilitado ? undefined : 'Reative o job antes de forçar a execução.'}
+                title={job.habilitado ? undefined : t('jobs.tituloForcar')}
                 style={{ whiteSpace: 'nowrap' }}
               >
-                {forcando === job.nome ? 'Executando...' : 'Forçar execução'}
+                {forcando === job.nome ? t('jobs.executando') : t('jobs.forcarExecucao')}
               </button>
             </div>
           </div>
@@ -143,17 +153,17 @@ export default function JobsPage() {
             }}
           >
             <div>
-              <div style={{ fontSize: 10, color: '#8A8FA3', textTransform: 'uppercase' }}>Última verificação</div>
-              <div style={{ fontSize: 12, color: '#2A2E3F' }}>{formatarDataHora(job.ultimaVerificacao)}</div>
+              <div style={{ fontSize: 10, color: '#8A8FA3', textTransform: 'uppercase' }}>{t('jobs.ultimaVerificacao')}</div>
+              <div style={{ fontSize: 12, color: '#2A2E3F' }}>{formatarDataHora(job.ultimaVerificacao, locale)}</div>
             </div>
             <div>
-              <div style={{ fontSize: 10, color: '#8A8FA3', textTransform: 'uppercase' }}>Última ação</div>
-              <div style={{ fontSize: 12, color: '#2A2E3F' }}>{formatarDataHora(job.ultimaAcao)}</div>
+              <div style={{ fontSize: 10, color: '#8A8FA3', textTransform: 'uppercase' }}>{t('jobs.ultimaAcao')}</div>
+              <div style={{ fontSize: 12, color: '#2A2E3F' }}>{formatarDataHora(job.ultimaAcao, locale)}</div>
             </div>
             <div>
-              <div style={{ fontSize: 10, color: '#8A8FA3', textTransform: 'uppercase' }}>Próxima prevista</div>
+              <div style={{ fontSize: 10, color: '#8A8FA3', textTransform: 'uppercase' }}>{t('jobs.proximaPrevista')}</div>
               <div style={{ fontSize: 12, color: '#2A2E3F' }}>
-                {job.habilitado ? formatarDataHora(job.proximaExecucaoPrevista) : 'Pausado'}
+                {job.habilitado ? formatarDataHora(job.proximaExecucaoPrevista, locale) : t('jobs.pausado')}
               </div>
             </div>
           </div>
@@ -175,7 +185,7 @@ export default function JobsPage() {
           onClick={() => setMensagem(null)}
         >
           <div className="cartao" style={{ width: 380 }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ marginTop: 0, color: '#1E7A46' }}>Job executado</h2>
+            <h2 style={{ marginTop: 0, color: '#1E7A46' }}>{t('jobs.jobExecutado')}</h2>
             <p style={{ fontSize: 13, color: '#5B6072', marginTop: -8 }}>{mensagem.jobNome}</p>
             <div style={{ background: '#F5F6FA', borderRadius: 10, padding: 12, marginBottom: 16 }}>
               {typeof mensagem.resultado === 'object' && mensagem.resultado !== null ? (
@@ -190,7 +200,7 @@ export default function JobsPage() {
               )}
             </div>
             <button className="botao-primario" onClick={() => setMensagem(null)} style={{ width: '100%' }}>
-              Fechar
+              {t('comum.fechar')}
             </button>
           </div>
         </div>
@@ -205,13 +215,23 @@ export default function JobsPage() {
           onClick={() => setHistorico(null)}
         >
           <div className="cartao" style={{ width: 480, maxHeight: '70vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ marginTop: 0, color: '#1B2E8A' }}>Histórico — {historico.jobNome}</h2>
+            <h2 style={{ marginTop: 0, color: '#1B2E8A' }}>{t('jobs.historicoTitulo')} — {historico.jobNome}</h2>
             <p style={{ fontSize: 12, color: '#8A8FA3', marginTop: -8, marginBottom: 16 }}>
-              Últimas {historico.logs.length} verificações, mais recente primeiro.
+              {/* Bloco A11a (2026-09-17): o original era "Últimas N
+                  verificações..." -- o número entra por fora e o
+                  trecho nominal vem do dicionário, porque `t()` não
+                  interpola e o adjetivo muda de posição entre os
+                  idiomas. */}
+              {historico.logs.length}{' '}
+              {t(
+                historico.logs.length === 1
+                  ? 'jobs.historicoContagemSingular'
+                  : 'jobs.historicoContagemPlural',
+              )}
             </p>
 
             {historico.logs.length === 0 ? (
-              <p style={{ color: '#8A8FA3', fontSize: 13 }}>Nenhum registro ainda.</p>
+              <p style={{ color: '#8A8FA3', fontSize: 13 }}>{t('jobs.nenhumRegistro')}</p>
             ) : (
               historico.logs.map((log, indice) => (
                 <div
@@ -229,7 +249,7 @@ export default function JobsPage() {
                   />
                   <div>
                     <div style={{ fontSize: 12, color: '#2A2E3F', fontWeight: 600 }}>
-                      {formatarDataHora(log.executado_em)}
+                      {formatarDataHora(log.executado_em, locale)}
                     </div>
                     {log.detalhe && (
                       <div style={{ fontSize: 12, color: '#8A8FA3' }}>{log.detalhe}</div>
@@ -244,7 +264,7 @@ export default function JobsPage() {
               onClick={() => setHistorico(null)}
               style={{ width: '100%', marginTop: 16 }}
             >
-              Fechar
+              {t('comum.fechar')}
             </button>
           </div>
         </div>

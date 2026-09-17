@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useI18n } from '../i18n/I18nContext';
 
 function IconeOlho({ aberto }: { aberto: boolean }) {
   if (aberto) {
@@ -31,6 +32,7 @@ export default function CampoSenha({
   style?: React.CSSProperties;
 }) {
   const [mostrar, setMostrar] = useState(false);
+  const { t } = useI18n();
 
   return (
     <div style={style}>
@@ -48,7 +50,7 @@ export default function CampoSenha({
           type="button"
           onClick={() => setMostrar((anterior) => !anterior)}
           tabIndex={-1}
-          title={mostrar ? 'Ocultar senha' : 'Mostrar senha'}
+          title={mostrar ? t('senha.ocultar') : t('senha.mostrar')}
           style={{
             position: 'absolute',
             right: 6,

@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n/I18nContext';
 import Cabecalho from '../components/Cabecalho';
 
 // Mesma estrutura do Layout.tsx do Account: Cabecalho em cima,
@@ -22,6 +23,7 @@ const linkEstilo = ({ isActive }: { isActive: boolean }): React.CSSProperties =>
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { sair } = useAuth();
+  const { t } = useI18n();
   const navegar = useNavigate();
 
   function lidarComSair() {
@@ -44,23 +46,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             flexDirection: 'column',
           }}
         >
+          {/* Bloco A11a (2026-09-17): Dashboard entrou como PRIMEIRO
+              item -- e' a tela de abertura (a raiz "/" redireciona
+              pra ele agora), entao o item do menu tem de bater com
+              onde o admin cai ao entrar. */}
+          <NavLink to="/dashboard" style={linkEstilo}>
+            {t('nav.dashboard')}
+          </NavLink>
           <NavLink to="/organizacoes" style={linkEstilo}>
-            Organizações
+            {t('nav.organizacoes')}
           </NavLink>
           <NavLink to="/administradores" style={linkEstilo}>
-            Administradores
+            {t('nav.administradores')}
           </NavLink>
           <NavLink to="/exportacoes" style={linkEstilo}>
-            Exportações
+            {t('nav.exportacoes')}
           </NavLink>
           <NavLink to="/jobs" style={linkEstilo}>
-            Jobs
+            {t('nav.jobs')}
           </NavLink>
           <NavLink to="/emails" style={linkEstilo}>
-            E-mails
+            {t('nav.emails')}
+          </NavLink>
+          <NavLink to="/planos" style={linkEstilo}>
+            {t('nav.planos')}
           </NavLink>
           <NavLink to="/configuracoes" style={linkEstilo}>
-            Configurações
+            {t('nav.configuracoes')}
           </NavLink>
           {/* Pacote 4 — Backoffice (2026-09-05): "Minha conta" saiu
               daqui, duplicado com o dropdown do avatar no Cabecalho.
@@ -69,7 +81,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div style={{ flex: 1 }} />
 
           <button className="botao-secundario" onClick={lidarComSair} style={{ marginTop: 8 }}>
-            Sair
+            {t('nav.sair')}
           </button>
         </aside>
 

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { listarExportacoesTodas, ExportacaoResumoAdmin } from '../api/admin';
+import { useI18n } from '../i18n/I18nContext';
 
 // Bloco 12 (2026-09-07) -- painel de visibilidade: quantas
 // exportações de dados existem, por status, pra entender consumo de
 // máquina/banda antes de virar surpresa. Não existia nada disso
 // antes -- era um "clique e reza" sem visibilidade nenhuma.
 export default function ExportacoesPage() {
+  const { t } = useI18n();
   const [porStatus, setPorStatus] = useState<{ status: string; total: number }[]>([]);
   const [exportacoes, setExportacoes] = useState<ExportacaoResumoAdmin[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -19,10 +21,10 @@ export default function ExportacoesPage() {
   }, []);
 
   const rotuloStatus: Record<string, string> = {
-    PENDENTE: 'Na fila',
-    PROCESSANDO: 'Gerando',
-    PRONTA: 'Pronta',
-    ERRO: 'Falhou',
+    PENDENTE: t('exportacoes.statusPENDENTE'),
+    PROCESSANDO: t('exportacoes.statusPROCESSANDO'),
+    PRONTA: t('exportacoes.statusPRONTA'),
+    ERRO: t('exportacoes.statusERRO'),
   };
   const corStatus: Record<string, string> = {
     PENDENTE: '#8A6D1D',
@@ -32,15 +34,14 @@ export default function ExportacoesPage() {
   };
 
   if (carregando) {
-    return <p style={{ color: '#8A8FA3' }}>Carregando...</p>;
+    return <p style={{ color: '#8A8FA3' }}>{t('comum.carregando')}</p>;
   }
 
   return (
     <div>
-      <h1 style={{ color: '#1B2E8A', marginTop: 0 }}>Exportações de dados</h1>
+      <h1 style={{ color: '#1B2E8A', marginTop: 0 }}>{t('exportacoes.titulo')}</h1>
       <p style={{ color: '#8A8FA3', fontSize: 13, marginTop: -8, marginBottom: 20 }}>
-        Toda exportação de dados pedida por qualquer organização (Bloco 11/12) -- pra entender
-        consumo de máquina e banda. Processadas pelo job "Processar exportações pendentes" em Jobs.
+        {t('exportacoes.subtitulo')}
       </p>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
@@ -51,22 +52,22 @@ export default function ExportacoesPage() {
           </div>
         ))}
         {porStatus.length === 0 && (
-          <p style={{ color: '#8A8FA3', fontSize: 13 }}>Nenhuma exportação pedida ainda.</p>
+          <p style={{ color: '#8A8FA3', fontSize: 13 }}>{t('exportacoes.nenhuma')}</p>
         )}
       </div>
 
       <div className="cartao" style={{ padding: 0 }}>
         {exportacoes.length === 0 ? (
-          <p style={{ padding: 24, color: '#8A8FA3' }}>Nenhuma exportação pedida ainda.</p>
+          <p style={{ padding: 24, color: '#8A8FA3' }}>{t('exportacoes.nenhuma')}</p>
         ) : (
           <table className="tabela">
             <thead>
               <tr>
-                <th>Organização</th>
-                <th>Status</th>
-                <th>Pedida em</th>
-                <th>Concluída em</th>
-                <th>Expira em</th>
+                <th>{t('exportacoes.colOrganizacao')}</th>
+                <th>{t('exportacoes.colStatus')}</th>
+                <th>{t('exportacoes.colPedidaEm')}</th>
+                <th>{t('exportacoes.colConcluidaEm')}</th>
+                <th>{t('exportacoes.colExpiraEm')}</th>
               </tr>
             </thead>
             <tbody>

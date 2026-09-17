@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { buscarMinhaConta, atualizarMinhaConta } from '../api/admin';
 import CampoSenha from './CampoSenha';
+import { useI18n } from '../i18n/I18nContext';
 
 // Bloco A11 (2026-09-16) -- igual ao MinhaContaModal do Account: mesmo
 // layout de modal, mesmos campos de senha sem pedir a senha atual (a
@@ -10,6 +11,7 @@ import CampoSenha from './CampoSenha';
 // dados -- é só nome, e-mail (fixo) e senha.
 export default function MinhaContaModal({ aoFechar }: { aoFechar: () => void }) {
   const { admin, atualizarAdminLocal } = useAuth();
+  const { t } = useI18n();
 
   const [nome, setNome] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
@@ -39,7 +41,7 @@ export default function MinhaContaModal({ aoFechar }: { aoFechar: () => void }) 
       setSucesso(true);
       setNovaSenha('');
     } catch {
-      setErro('Não foi possível salvar. Tente novamente.');
+      setErro(t('minhaConta.erroSalvar'));
     } finally {
       setSalvando(false);
     }
@@ -48,13 +50,13 @@ export default function MinhaContaModal({ aoFechar }: { aoFechar: () => void }) 
   return (
     <div className="overlay-modal" onClick={aoFechar}>
       <div className="modal" onClick={(e) => e.stopPropagation()} style={{ width: 380 }}>
-        <h2 style={{ marginTop: 0, color: '#1B2E8A' }}>Minha conta</h2>
+        <h2 style={{ marginTop: 0, color: '#1B2E8A' }}>{t('minhaConta.titulo')}</h2>
 
         {carregando ? (
-          <p style={{ color: '#8A8FA3' }}>Carregando...</p>
+          <p style={{ color: '#8A8FA3' }}>{t('comum.carregando')}</p>
         ) : (
           <>
-            <label style={{ fontSize: 12, color: '#5B6072' }}>Nome</label>
+            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.nome')}</label>
             <input
               className="campo"
               value={nome}
@@ -62,23 +64,23 @@ export default function MinhaContaModal({ aoFechar }: { aoFechar: () => void }) 
               style={{ marginTop: 4, marginBottom: 12 }}
             />
 
-            <label style={{ fontSize: 12, color: '#5B6072' }}>E-mail</label>
+            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.email')}</label>
             <input className="campo" value={admin?.email ?? ''} disabled style={{ marginTop: 4, marginBottom: 12 }} />
 
-            <label style={{ fontSize: 12, color: '#5B6072' }}>Nova senha</label>
+            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.novaSenha')}</label>
             <CampoSenha
               valor={novaSenha}
               aoMudar={setNovaSenha}
-              dica={novaSenha ? 'Mínimo de 8 caracteres.' : undefined}
+              dica={novaSenha ? t('minhaConta.dicaSenha') : undefined}
               style={{ marginTop: 4, marginBottom: 16 }}
             />
 
             {erro && <p className="erro">{erro}</p>}
-            {sucesso && <p style={{ color: '#1E7A46', fontSize: 13, marginBottom: 12 }}>Dados salvos.</p>}
+            {sucesso && <p style={{ color: '#1E7A46', fontSize: 13, marginBottom: 12 }}>{t('minhaConta.sucesso')}</p>}
 
             <div style={{ display: 'flex', gap: 8 }}>
               <button className="botao-secundario" onClick={aoFechar} style={{ flex: 1 }}>
-                Fechar
+                {t('comum.fechar')}
               </button>
               <button
                 className="botao-primario"
@@ -86,7 +88,7 @@ export default function MinhaContaModal({ aoFechar }: { aoFechar: () => void }) 
                 disabled={salvando || !nome || (novaSenha.length > 0 && novaSenha.length < 8)}
                 style={{ flex: 1 }}
               >
-                {salvando ? 'Salvando...' : 'Salvar'}
+                {salvando ? t('comum.salvando') : t('comum.salvar')}
               </button>
             </div>
           </>
