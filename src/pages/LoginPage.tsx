@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n/I18nContext';
 import SeletorIdioma from '../components/SeletorIdioma';
+import RodapeLegal from '../components/RodapeLegal';
 
 // Bloco 22 (2026-09-14): reconstruída do zero pra seguir exatamente o
 // mesmo padrão do Account -- fundo claro (era escuro, #0E1233), logo
@@ -81,6 +82,16 @@ export default function LoginPage() {
             {carregando ? t('login.entrando') : t('login.entrar')}
           </button>
         </form>
+      </div>
+
+      {/* Bloco A09 (2026-09-18) -- os links legais na tela de login.
+          Pedido: "na tela de login deve estar na parte inferior, na
+          parte direita". Fica em posicao absoluta de proposito, pra NAO
+          participar do flex que centraliza o cartao -- se entrasse no
+          fluxo normal, empurraria o formulario pra cima e ele deixaria
+          de estar centralizado na altura da tela. */}
+      <div style={{ position: 'absolute', bottom: 24, right: 28 }}>
+        <RodapeLegal alinhamento="direita" />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n/I18nContext';
 import Cabecalho from '../components/Cabecalho';
+import RodapeLegal from '../components/RodapeLegal';
 
 // Mesma estrutura do Layout.tsx do Account: Cabecalho em cima,
 // barra lateral esquerda de 220px embaixo dele -- nao um menu
@@ -87,6 +88,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         <main style={{ flex: 1, padding: 32 }}>{children}</main>
       </div>
+
+      {/* Bloco A09 (2026-09-18) -- o rodape em TODAS as telas logadas.
+          Fica dentro do Layout porque ele e' o unico ponto por onde
+          toda tela logada passa: assim o rodape existe em todas de uma
+          vez, e uma tela nova ja' nasce com ele sem ninguem precisar
+          lembrar. */}
+      <footer
+        style={{
+          borderTop: '1px solid #E1E3EF',
+          background: '#FFFFFF',
+          padding: '14px 24px',
+        }}
+      >
+        <RodapeLegal />
+      </footer>
     </div>
   );
 }
