@@ -34,6 +34,16 @@ export default function OrganizacoesPage() {
   const [carregando, setCarregando] = useState(true);
   const [selecionada, setSelecionada] = useState<OrganizacaoResumo | null>(null);
 
+  // Bloco A12a (2026-09-19) -- filtros da lista. Nada aqui vai ao
+  // backend: a lista inteira ja' chega de uma vez em listarOrganizacoes,
+  // entao filtrar em memoria e' instantaneo e nao inventa uma segunda
+  // consulta pra manter em dia. As opcoes de plano saem do proprio dado
+  // carregado, nunca de uma lista fixa -- se amanha existir um plano
+  // novo, ele aparece no filtro sozinho.
+  const [busca, setBusca] = useState('');
+  const [filtroPlano, setFiltroPlano] = useState('');
+  const [filtroStatus, setFiltroStatus] = useState<'todas' | 'ativas' | 'inativas'>('todas');
+
   function carregar() {
     listarOrganizacoes().then((dados) => {
       setOrganizacoes(dados);
@@ -45,6 +55,29 @@ export default function OrganizacoesPage() {
     carregar();
   }, []);
 
+  const termoBusca = busca.trim().toLowerCase();
+  const organizacoesFiltradas = organizacoes.filter((org) => {
+    if (termoBusca && !org.nome.toLowerCase().includes(termoBusca)) return false;
+    if (filtroPlano && (org.plano_codigo ?? '') !== filtroPlano) return false;
+    if (filtroStatus === 'ativas' && !org.ativo) return false;
+    if (filtroStatus === 'inativas' && org.ativo) return false;
+    return true;
+  });
+
+  // Ordem canonica dos planos (Free -> Premium), nao a alfabetica: e' a
+  // ordem comercial, a mesma que PlanosPage.tsx mostra.
+  const ORDEM_PLANOS = ['FREE', 'BASIC', 'PRO', 'PREMIUM'];
+  const planosPresentes = ORDEM_PLANOS.filter((codigo) =>
+    organizacoes.some((org) => org.plano_codigo === codigo),
+  );
+
+  const filtrando = termoBusca !== '' || filtroPlano !== '' || filtroStatus !== 'todas';
+
+  // Bloco A12a (2026-09-19) -- quando ha' filtro ativo, o subtitulo
+  // mostra "X de Y" em vez do total. Sem isso a contagem mente: diz
+  // "3 organizacoes" com a tabela mostrando 1.
+  const contagem = filtrando ? organizacoesFiltradas.length : organizacoes.length;
+
   return (
     <div>
       <h1 style={{ color: '#1B2E8A', marginTop: 0 }}>{t('organizacoes.titulo')}</h1>
@@ -52,26 +85,73 @@ export default function OrganizacoesPage() {
         {/* Diferenca do original: a contagem era montada com pedacos
             ("organizaç" + "ão"/"ões"), o que so' funciona em portugues.
             Agora sao DUAS chaves inteiras -- `t()` nao interpola. */}
-        {organizacoes.length}{' '}
+        {contagem}
+        {/* Bloco A12a -- "3 / 12" enquanto ha' filtro. Barra e numeros,
+            sem palavra nenhuma: nao ha' o que traduzir. */}
+        {filtrando && ` / ${organizacoes.length}`}{' '}
         {t(
-          organizacoes.length === 1
+          contagem === 1
             ? 'organizacoes.contagemSingular'
             : 'organizacoes.contagemPlural',
         )}
         . {t('organizacoes.subtitulo')}
       </p>
 
+      {/* Bloco A12a (2026-09-19) -- barra de filtros. Fica fora do
+          cartao da tabela, sempre visivel, pra nao sumir junto com o
+          "carregando" nem com o "nenhuma" -- filtrar e' o que a pessoa
+          faz ANTES de saber se sobrou alguma coisa. */}
+      {!carregando && organizacoes.length > 0 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+          <input
+            className="campo"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder={t('organizacoes.filtrarPorNome')}
+            style={{ minWidth: 220, flex: 1 }}
+          />
+          <select
+            className="campo"
+            value={filtroPlano}
+            onChange={(e) => setFiltroPlano(e.target.value)}
+            style={{ minWidth: 160 }}
+          >
+            <option value="">{t('organizacoes.filtroPlanoTodos')}</option>
+            {planosPresentes.map((codigo) => (
+              <option key={codigo} value={codigo}>{NOME_PLANO[codigo] ?? codigo}</option>
+            ))}
+          </select>
+          <select
+            className="campo"
+            value={filtroStatus}
+            onChange={(e) => setFiltroStatus(e.target.value as 'todas' | 'ativas' | 'inativas')}
+            style={{ minWidth: 160 }}
+          >
+            <option value="todas">{t('organizacoes.filtroStatusTodos')}</option>
+            <option value="ativas">{t('organizacoes.filtroStatusAtivas')}</option>
+            <option value="inativas">{t('organizacoes.filtroStatusInativas')}</option>
+          </select>
+        </div>
+      )}
+
       <div className="cartao" style={{ padding: 0 }}>
         {carregando ? (
           <p style={{ padding: 24, color: '#8A8FA3' }}>{t('comum.carregando')}</p>
         ) : organizacoes.length === 0 ? (
           <p style={{ padding: 24, color: '#8A8FA3' }}>{t('organizacoes.nenhuma')}</p>
+        ) : organizacoesFiltradas.length === 0 ? (
+          // Antes esta tela nao tinha filtro nenhum, entao "nenhuma
+          // organizacao" so' podia significar lista vazia. Agora que
+          // pode ser filtro sem resultado, a mensagem tem que dizer
+          // QUAL dos dois casos e' -- senao parece que a base sumiu.
+          <p style={{ padding: 24, color: '#8A8FA3' }}>{t('organizacoes.nenhumResultado')}</p>
         ) : (
           <table className="tabela">
             <thead>
               <tr>
                 <th>{t('organizacoes.colNome')}</th>
                 <th>{t('organizacoes.colStatus')}</th>
+                <th>{t('organizacoes.colPlano')}</th>
                 <th>{t('organizacoes.colSupervisor')}</th>
                 <th>{t('organizacoes.colCriadaEm')}</th>
                 <th>{t('organizacoes.colLocaisAtivos')}</th>
@@ -80,7 +160,7 @@ export default function OrganizacoesPage() {
               </tr>
             </thead>
             <tbody>
-              {organizacoes.map((org) => (
+              {organizacoesFiltradas.map((org) => (
                 <tr
                   key={org.id}
                   onClick={() => setSelecionada(org)}
@@ -91,6 +171,12 @@ export default function OrganizacoesPage() {
                     <span className={`selo ${!org.ativo ? 'selo-inativo' : ''}`}>
                       {t(org.ativo ? 'comum.ativa' : 'comum.inativa')}
                     </span>
+                  </td>
+                  {/* Bloco A12a (2026-09-19) -- plano vigente da
+                      organizacao, direto na lista: antes so' dava pra
+                      saber abrindo o modal de cada uma, uma por uma. */}
+                  <td style={{ fontWeight: 600 }}>
+                    {org.plano_codigo ? (NOME_PLANO[org.plano_codigo] ?? org.plano_codigo) : '—'}
                   </td>
                   <td style={{ fontSize: 12 }}>
                     {org.supervisor_nome ? (
@@ -176,13 +262,24 @@ function ModalOrganizacao({
   const [planoEscolhido, setPlanoEscolhido] = useState('');
   const [motivoPlano, setMotivoPlano] = useState('');
 
+  // Bloco A12a (2026-09-19) -- a aba Historico passou a trazer TAMBEM as
+  // trocas de plano (ver a linha do tempo mais abaixo). Antes ela buscava
+  // so' tbl_organizacao_historico, e por isso uma troca de plano nao
+  // aparecia em lugar nenhum do historico: ela ficava escondida na aba
+  // Plano, junto do formulario que a causou -- lugar de agir, nao de
+  // consultar.
   useEffect(() => {
-    if (aba === 'historico' && historico === null) {
+    if (aba === 'historico' && (historico === null || historicoPlano === null)) {
       setCarregandoHistorico(true);
-      historicoOrganizacao(organizacao.id).then((dados) => {
-        setHistorico(dados);
-        setCarregandoHistorico(false);
-      });
+      Promise.all([
+        historico ?? historicoOrganizacao(organizacao.id),
+        historicoPlano ?? historicoPlanoOrganizacao(organizacao.id),
+      ])
+        .then(([dadosHistorico, dadosPlano]) => {
+          setHistorico(dadosHistorico);
+          setHistoricoPlano(dadosPlano);
+        })
+        .finally(() => setCarregandoHistorico(false));
     }
     if (aba === 'plano' && historicoPlano === null) {
       Promise.all([listarPlanos(), historicoPlanoOrganizacao(organizacao.id)]).then(([listaPlanos, hist]) => {
@@ -282,6 +379,38 @@ function ModalOrganizacao({
     plano: t('organizacoes.abaPlano'),
     historico: t('organizacoes.abaHistorico'),
   };
+
+  // Bloco A12a (2026-09-19) -- linha do tempo unica desta organizacao:
+  // acoes administrativas (tbl_organizacao_historico) + trocas de plano
+  // (tbl_organizacao_plano), misturadas e ordenadas por data. Sao duas
+  // tabelas com donos diferentes -- uma e' do admin.service, a outra do
+  // planos.service -- e por isso nunca se juntaram sozinhas. Juntar na
+  // tela e' o que faz a aba Historico cumprir o que o nome promete: o
+  // que aconteceu com esta organizacao, numa lista so'.
+  const linhaDoTempo = [
+    ...(historico ?? []).map((h) => ({
+      id: `acao-${h.id}`,
+      quando: h.criado_em,
+      rotulo: rotuloAcao[h.acao] ?? h.acao,
+      cor: corAcao[h.acao],
+      quem: h.criado_por_nome,
+      detalhe: null as string | null,
+      motivo: h.motivo,
+      vigente: false,
+    })),
+    ...(historicoPlano ?? []).map((h) => ({
+      id: `plano-${h.id}`,
+      quando: h.inicio_em,
+      // `t()` nao interpola: a frase e' montada com o nome do plano
+      // colado depois do rotulo, como ja' se faz no resto do sistema.
+      rotulo: `${t('organizacoes.mudancaDePlano')}: ${NOME_PLANO[h.codigo] ?? h.codigo}`,
+      cor: '#2946E0',
+      quem: h.alterado_por_nome,
+      detalhe: h.origem,
+      motivo: h.motivo,
+      vigente: h.fim_em === null,
+    })),
+  ].sort((a, b) => new Date(b.quando).getTime() - new Date(a.quando).getTime());
 
   return (
     <div
@@ -527,27 +656,14 @@ function ModalOrganizacao({
                     </button>
                   )}
 
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#5B6072', marginTop: 8, marginBottom: 6 }}>
-                    {t('organizacoes.historico')}
-                  </div>
-                  {historicoPlano.length === 0 ? (
-                    <p style={{ color: '#8A8FA3', fontSize: 13 }}>{t('organizacoes.nenhumEvento')}</p>
-                  ) : (
-                    historicoPlano.map((h) => (
-                      <div key={h.id} style={{ borderLeft: '3px solid #2946E0', paddingLeft: 10, marginBottom: 12 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#2A2E3F' }}>
-                          {NOME_PLANO[h.codigo] ?? h.codigo}
-                          {h.fim_em === null && <span style={{ color: '#1E7A46' }}> {t('organizacoes.vigente')}</span>}
-                        </div>
-                        <div style={{ fontSize: 11, color: '#8A8FA3' }}>
-                          {new Date(h.inicio_em).toLocaleString(locale)}
-                          {h.alterado_por_nome && ` · ${h.alterado_por_nome}`}
-                          {' · '}{h.origem}
-                        </div>
-                        {h.motivo && <div style={{ fontSize: 12, marginTop: 2 }}>{h.motivo}</div>}
-                      </div>
-                    ))
-                  )}
+                  {/* Bloco A12a (2026-09-19) -- o historico de planos
+                      saiu desta aba e foi pra aba Historico, junto das
+                      ativacoes/inativacoes/edicoes. Aqui ficou o que
+                      esta aba sabe fazer: mostrar o plano vigente e
+                      trocar. Consultar historico e' na outra. */}
+                  <p style={{ fontSize: 12, color: '#8A8FA3', marginTop: 4, marginBottom: 0 }}>
+                    {t('organizacoes.historicoNaAbaHistorico')}
+                  </p>
                 </>
               )
             )}
@@ -555,20 +671,22 @@ function ModalOrganizacao({
             {aba === 'historico' && (
               carregandoHistorico ? (
                 <p style={{ color: '#8A8FA3', fontSize: 13 }}>{t('comum.carregando')}</p>
-              ) : !historico || historico.length === 0 ? (
+              ) : linhaDoTempo.length === 0 ? (
                 <p style={{ color: '#8A8FA3', fontSize: 13 }}>{t('organizacoes.nenhumEventoRegistrado')}</p>
               ) : (
                 <div>
-                  {historico.map((h) => (
-                    <div key={h.id} style={{ borderLeft: `3px solid ${corAcao[h.acao]}`, paddingLeft: 10, marginBottom: 12 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: corAcao[h.acao] }}>
-                        {rotuloAcao[h.acao] ?? h.acao}
+                  {linhaDoTempo.map((item) => (
+                    <div key={item.id} style={{ borderLeft: `3px solid ${item.cor}`, paddingLeft: 10, marginBottom: 12 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: item.cor }}>
+                        {item.rotulo}
+                        {item.vigente && <span style={{ color: '#1E7A46' }}> {t('organizacoes.vigente')}</span>}
                       </div>
                       <div style={{ fontSize: 11, color: '#8A8FA3' }}>
-                        {new Date(h.criado_em).toLocaleString(locale)}
-                        {h.criado_por_nome && ` · ${h.criado_por_nome}`}
+                        {new Date(item.quando).toLocaleString(locale)}
+                        {item.quem && ` · ${item.quem}`}
+                        {item.detalhe && ` · ${item.detalhe}`}
                       </div>
-                      {h.motivo && <div style={{ fontSize: 12, marginTop: 2 }}>{h.motivo}</div>}
+                      {item.motivo && <div style={{ fontSize: 12, marginTop: 2 }}>{item.motivo}</div>}
                     </div>
                   ))}
                 </div>

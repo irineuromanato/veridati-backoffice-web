@@ -24,6 +24,11 @@ export interface OrganizacaoResumo {
   checklists_publicados: number;
   supervisor_nome: string | null;
   supervisor_email: string | null;
+  // Bloco A12a (2026-09-19) -- plano vigente, pra coluna Plano da lista.
+  // Vem do backend ja' pronto (codigo do plano, ex.: 'FREE'/'PRO'), nunca
+  // null numa organizacao de verdade -- toda organizacao nasce com Free.
+  // Fica null so' se a consulta nao achar linha vigente nenhuma.
+  plano_codigo: string | null;
 }
 
 export interface HistoricoOrganizacao {
