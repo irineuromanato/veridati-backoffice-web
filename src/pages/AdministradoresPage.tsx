@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { listarAdmins, criarAdmin, atualizarAdmin, excluirAdmin, Administrador } from '../api/admin';
 import { useAuth } from '../auth/AuthContext';
 import IconeAcao from '../components/IconeAcao';
+import Icone from '../components/Icone';
 import { useI18n } from '../i18n/I18nContext';
 
 // Bloco 10 (2026-09-06) -- criar mais administradores do Backoffice.
@@ -44,6 +45,7 @@ export default function AdministradoresPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h1 style={{ margin: 0, color: '#1B2E8A' }}>{t('administradores.titulo')}</h1>
         <button className="botao-primario" onClick={() => setModalAberto('novo')}>
+          <Icone nome="adicionar" />
           {t('administradores.novo')}
         </button>
       </div>

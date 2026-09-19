@@ -30,6 +30,22 @@ a {
   text-decoration: none;
 }
 
+/* Bloco A12 (2026-09-18) -- as tres classes de botao viram linha flex.
+   Sem isto, um <Icone> dentro do botao fica INLINE junto do texto e senta
+   na linha de base do rotulo, alguns pixels abaixo do centro -- parece
+   desalinhado, e o defeito so' aparece nos botoes que ganham icone.
+
+   Uma regra so', e nao um `display` inline em cada um dos ~60 botoes: o
+   unico motivo de existir destas classes e' justamente nao repetir isso. */
+.botao-primario,
+.botao-secundario,
+.botao-perigo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .botao-primario {
   background: var(--cor-primaria);
   color: #FFFFFF;

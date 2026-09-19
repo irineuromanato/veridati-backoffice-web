@@ -8,6 +8,7 @@ import {
   ConversaoPlano,
 } from '../api/admin';
 import { useI18n } from '../i18n/I18nContext';
+import Icone from '../components/Icone';
 
 // Bloco A01 (2026-09-17), Fase 1 -- CRUD de planos no Backoffice.
 // Nenhum texto fixo de "nome do plano" ou "frase de limite" vem do
@@ -144,6 +145,7 @@ export default function PlanosPage() {
               <h2 style={{ margin: 0, color: '#1B2E8A' }}>{NOME_PLANO[plano.codigo] ?? plano.codigo}</h2>
               {editando !== plano.id && (
                 <button className="botao-secundario" style={{ fontSize: 11, padding: '4px 10px' }} onClick={() => iniciarEdicao(plano)}>
+                  <Icone nome="editar" tamanho={14} />
                   {t('comum.editar')}
                 </button>
               )}

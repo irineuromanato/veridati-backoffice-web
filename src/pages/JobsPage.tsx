@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { listarJobs, forcarJob, listarLogsDoJob, definirHabilitadoJob, JobStatus, LogJob } from '../api/admin';
 import { useI18n } from '../i18n/I18nContext';
+import Icone from '../components/Icone';
 
 // O idioma da interface vira o locale das datas (mesmo mapa do Dashboard).
 const LOCAIS_POR_IDIOMA: Record<string, string> = {
@@ -132,6 +133,7 @@ export default function JobsPage() {
                 disabled={carregandoHistorico}
                 style={{ whiteSpace: 'nowrap' }}
               >
+                <Icone nome="relogio" tamanho={16} />
                 {t('jobs.verHistorico')}
               </button>
               <button
@@ -141,6 +143,7 @@ export default function JobsPage() {
                 title={job.habilitado ? undefined : t('jobs.tituloForcar')}
                 style={{ whiteSpace: 'nowrap' }}
               >
+                <Icone nome="atualizar" tamanho={16} />
                 {forcando === job.nome ? t('jobs.executando') : t('jobs.forcarExecucao')}
               </button>
             </div>

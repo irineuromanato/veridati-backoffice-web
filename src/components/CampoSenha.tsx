@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
 import { useI18n } from '../i18n/I18nContext';
+import Icone from './Icone';
 
-function IconeOlho({ aberto }: { aberto: boolean }) {
-  if (aberto) {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
-        <circle cx="12" cy="12" r="3" />
-      </svg>
-    );
-  }
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.87 18.87 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.82 18.82 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-      <line x1="1" y1="1" x2="23" y2="23" />
-    </svg>
-  );
-}
+// Bloco A12 (2026-09-19) -- aqui vivia um `IconeOlho` proprio, com os dois
+// <path> do olho escritos a mao. Era o unico desenho do backoffice fora do
+// vocabulario compartilhado: nao acompanhava tamanho nem espessura dos
+// outros, e nao aparecia em nenhuma busca por "Icone". Agora sao `ver` /
+// `ocultar`, os mesmos nomes que o resto do sistema usa. O `cor` nao e'
+// passado: no web o `Icone` desenha em `currentColor` e herda o #5B6072
+// do proprio botao.
 
 export default function CampoSenha({
   valor,
@@ -64,7 +56,7 @@ export default function CampoSenha({
             display: 'flex',
           }}
         >
-          <IconeOlho aberto={mostrar} />
+          <Icone nome={mostrar ? 'ocultar' : 'ver'} tamanho={18} />
         </button>
       </div>
       {dica && (

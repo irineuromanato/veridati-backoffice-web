@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { buscarConfiguracao, atualizarConfiguracao } from '../api/admin';
 import { useI18n } from '../i18n/I18nContext';
+import Icone from '../components/Icone';
 
 // Cada numero e' o valor que o backend grava (1 = segunda ... 7 = domingo);
 // o rotulo visivel vem do dicionario (`configuracoes.dia.N`).
@@ -117,6 +118,7 @@ export default function ConfiguracoesPage() {
             />
           </div>
           <button className="botao-secundario" onClick={adicionarHorario}>
+            <Icone nome="adicionar" />
             {t('configuracoes.adicionar')}
           </button>
         </div>
@@ -175,7 +177,16 @@ export default function ConfiguracoesPage() {
 
       {sucesso && <p style={{ color: '#1E7A46', fontSize: 13, marginBottom: 12 }}>{t('configuracoes.sucesso')}</p>}
       <button className="botao-primario" onClick={lidarComSalvar} disabled={salvando}>
-        {salvando ? t('comum.salvando') : t('configuracoes.salvarConfiguracao')}
+        {/* O ✓ so' entra quando ha' o que confirmar: ao lado de um "Salvando
+            ..." ele diria que ja' acabou. */}
+        {salvando ? (
+          t('comum.salvando')
+        ) : (
+          <>
+            <Icone nome="ok" />
+            {t('configuracoes.salvarConfiguracao')}
+          </>
+        )}
       </button>
     </div>
   );
