@@ -28,6 +28,20 @@ const LOCALES: Record<Idioma, string> = {
   FR: 'fr-FR',
 };
 
+// Bloco A015 (2026-09-22), Fase 2 -- mesma função de DashboardPage.tsx
+// (cada tela guarda a sua, é o padrão já usado aqui).
+function formatarBytes(bytes: number): string {
+  if (!bytes) return '0 B';
+  const unidades = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let valor = bytes;
+  let indice = 0;
+  while (valor >= 1024 && indice < unidades.length - 1) {
+    valor /= 1024;
+    indice += 1;
+  }
+  return `${valor.toFixed(indice <= 1 ? 0 : 1)} ${unidades[indice]}`;
+}
+
 export default function OrganizacoesPage() {
   const { t, idioma } = useI18n();
   const [organizacoes, setOrganizacoes] = useState<OrganizacaoResumo[]>([]);
@@ -157,6 +171,7 @@ export default function OrganizacoesPage() {
                 <th>{t('organizacoes.colLocaisAtivos')}</th>
                 <th>{t('organizacoes.colUsuariosAtivos')}</th>
                 <th>{t('organizacoes.colChecklistsPublicados')}</th>
+                <th>{t('organizacoes.colPdfContratos')}</th>
               </tr>
             </thead>
             <tbody>
@@ -194,6 +209,7 @@ export default function OrganizacoesPage() {
                   <td>{org.locais_ativos}</td>
                   <td>{org.usuarios_ativos}</td>
                   <td>{org.checklists_publicados}</td>
+                  <td style={{ color: '#8A8FA3' }}>{formatarBytes(org.pdf_bytes_usados)}</td>
                 </tr>
               ))}
             </tbody>

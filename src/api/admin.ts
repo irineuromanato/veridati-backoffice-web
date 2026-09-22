@@ -29,6 +29,9 @@ export interface OrganizacaoResumo {
   // null numa organizacao de verdade -- toda organizacao nasce com Free.
   // Fica null so' se a consulta nao achar linha vigente nenhuma.
   plano_codigo: string | null;
+  // Bloco A015 (2026-09-22), Fase 2 -- soma dos PDFs anexados aos
+  // contratos desta organização, em bytes.
+  pdf_bytes_usados: number;
 }
 
 export interface HistoricoOrganizacao {
@@ -235,6 +238,8 @@ export interface Plano {
   limite_checklists_aprovados_mes: number | null;
   limite_tarefas_finalizadas_mes: number | null;
   limite_fotos_por_pergunta: number | null;
+  limite_contratos: number | null;
+  limite_documentos_por_contrato: number | null;
   tem_mapa: boolean;
   nivel_relatorios: 'NENHUM' | 'LIMITADO' | 'COMPLETO';
   nivel_alertas_email: 'NENHUM' | 'BASICO' | 'COMPLETO';
@@ -255,6 +260,8 @@ export async function criarPlano(dados: {
   limiteChecklistsAprovadosMes: number | null;
   limiteTarefasFinalizadasMes: number | null;
   limiteFotosPorPergunta: number | null;
+  limiteContratos: number | null;
+  limiteDocumentosPorContrato: number | null;
   temMapa: boolean;
   nivelRelatorios: string;
   nivelAlertasEmail: string;
@@ -271,6 +278,8 @@ export async function atualizarPlano(
     limiteChecklistsAprovadosMes: number | null;
     limiteTarefasFinalizadasMes: number | null;
     limiteFotosPorPergunta: number | null;
+    limiteContratos: number | null;
+    limiteDocumentosPorContrato: number | null;
     temMapa: boolean;
     nivelRelatorios: string;
     nivelAlertasEmail: string;

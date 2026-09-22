@@ -89,6 +89,8 @@ export default function PlanosPage() {
         limiteChecklistsAprovadosMes: rascunho.limite_checklists_aprovados_mes ?? null,
         limiteTarefasFinalizadasMes: rascunho.limite_tarefas_finalizadas_mes ?? null,
         limiteFotosPorPergunta: rascunho.limite_fotos_por_pergunta ?? null,
+        limiteContratos: rascunho.limite_contratos ?? null,
+        limiteDocumentosPorContrato: rascunho.limite_documentos_por_contrato ?? null,
         temMapa: rascunho.tem_mapa,
         nivelRelatorios: rascunho.nivel_relatorios,
         nivelAlertasEmail: rascunho.nivel_alertas_email,
@@ -168,6 +170,12 @@ export default function PlanosPage() {
                 <TabelaLinha rotulo={t('planos.fotosPorPergunta')}>
                   {campoNulavel(rascunho.limite_fotos_por_pergunta, (v) => setRascunho({ ...rascunho, limite_fotos_por_pergunta: v }))}
                 </TabelaLinha>
+                <TabelaLinha rotulo={t('planos.contratos')}>
+                  {campoNulavel(rascunho.limite_contratos, (v) => setRascunho({ ...rascunho, limite_contratos: v }))}
+                </TabelaLinha>
+                <TabelaLinha rotulo={t('planos.documentosPorContrato')}>
+                  {campoNulavel(rascunho.limite_documentos_por_contrato, (v) => setRascunho({ ...rascunho, limite_documentos_por_contrato: v }))}
+                </TabelaLinha>
                 <TabelaLinha rotulo={t('planos.mapa')}>
                   <input
                     type="checkbox"
@@ -212,6 +220,8 @@ export default function PlanosPage() {
                 <TabelaLinha rotulo={t('planos.checklistsAprovadosMes')}>{rotuloLimite(plano.limite_checklists_aprovados_mes, t)}</TabelaLinha>
                 <TabelaLinha rotulo={t('planos.tarefasFinalizadasMes')}>{rotuloLimite(plano.limite_tarefas_finalizadas_mes, t)}</TabelaLinha>
                 <TabelaLinha rotulo={t('planos.fotosPorPergunta')}>{rotuloLimite(plano.limite_fotos_por_pergunta, t)}</TabelaLinha>
+                <TabelaLinha rotulo={t('planos.contratos')}>{rotuloLimite(plano.limite_contratos, t)}</TabelaLinha>
+                <TabelaLinha rotulo={t('planos.documentosPorContrato')}>{rotuloLimite(plano.limite_documentos_por_contrato, t)}</TabelaLinha>
                 <TabelaLinha rotulo={t('planos.mapa')}>{plano.tem_mapa ? t('comum.sim') : t('comum.nao')}</TabelaLinha>
                 <TabelaLinha rotulo={t('planos.relatorios')}>{rotuloNivel(plano.nivel_relatorios, t)}</TabelaLinha>
                 <TabelaLinha rotulo={t('planos.alertasEmail')}>{rotuloNivel(plano.nivel_alertas_email, t)}</TabelaLinha>

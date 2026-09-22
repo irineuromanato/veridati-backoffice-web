@@ -49,7 +49,7 @@ export default function EmailsPage() {
 
       {erro && <p className="erro" style={{ maxWidth: 640 }}>{erro}</p>}
 
-      <div className="cartao" style={{ padding: 0, maxWidth: 720 }}>
+      <div className="cartao" style={{ padding: 0, width: '100%' }}>
         <table className="tabela">
           <thead>
             <tr>

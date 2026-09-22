@@ -104,6 +104,7 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'organizacoes.colLocaisAtivos': 'Locais ativos',
     'organizacoes.colUsuariosAtivos': 'Usuários ativos',
     'organizacoes.colChecklistsPublicados': 'Checklists publicados',
+    'organizacoes.colPdfContratos': 'PDFs de contratos',
     'organizacoes.semSupervisor': 'Sem supervisor',
     'organizacoes.abaAcoes': 'Ações',
     'organizacoes.abaEditar': 'Editar',
@@ -266,6 +267,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.LIMITE_PLANO': 'Aviso de limite do plano',
     'emails.descricao.LIMITE_PLANO':
       'Avisa o supervisor quando a organização está perto de um limite do plano contratado.',
+    'emails.titulo.TROCA_PLANO': 'Mudança de plano',
+    'emails.descricao.TROCA_PLANO':
+      'Avisa o supervisor quando o plano da organização é alterado pelo Backoffice.',
 
     // ---- planos ----
     'planos.titulo': 'Planos',
@@ -276,6 +280,8 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'planos.checklistsAprovadosMes': 'Checklists aprovados/mês',
     'planos.tarefasFinalizadasMes': 'Tarefas finalizadas/mês',
     'planos.fotosPorPergunta': 'Fotos por pergunta',
+    'planos.contratos': 'Contratos',
+    'planos.documentosPorContrato': 'Documentos por contrato',
     'planos.mapa': 'Mapa',
     'planos.relatorios': 'Relatórios',
     'planos.alertasEmail': 'Alertas por e-mail',
@@ -415,6 +421,7 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'organizacoes.colLocaisAtivos': 'Locais ativos',
     'organizacoes.colUsuariosAtivos': 'Utilizadores ativos',
     'organizacoes.colChecklistsPublicados': 'Checklists publicados',
+    'organizacoes.colPdfContratos': 'PDFs de contratos',
     'organizacoes.semSupervisor': 'Sem supervisor',
     'organizacoes.abaAcoes': 'Ações',
     'organizacoes.abaEditar': 'Editar',
@@ -569,6 +576,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.LIMITE_PLANO': 'Aviso de limite do plano',
     'emails.descricao.LIMITE_PLANO':
       'Avisa o supervisor quando a organização está perto de um limite do plano contratado.',
+    'emails.titulo.TROCA_PLANO': 'Mudança de plano',
+    'emails.descricao.TROCA_PLANO':
+      'Avisa o supervisor quando o plano da organização é alterado pelo Backoffice.',
 
     'planos.titulo': 'Planos',
     'planos.subtitulo':
@@ -578,6 +588,8 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'planos.checklistsAprovadosMes': 'Checklists aprovados/mês',
     'planos.tarefasFinalizadasMes': 'Tarefas concluídas/mês',
     'planos.fotosPorPergunta': 'Fotos por pergunta',
+    'planos.contratos': 'Contratos',
+    'planos.documentosPorContrato': 'Documentos por contrato',
     'planos.mapa': 'Mapa',
     'planos.relatorios': 'Relatórios',
     'planos.alertasEmail': 'Alertas por e-mail',
@@ -715,6 +727,7 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'organizacoes.colLocaisAtivos': 'Active locations',
     'organizacoes.colUsuariosAtivos': 'Active users',
     'organizacoes.colChecklistsPublicados': 'Published checklists',
+    'organizacoes.colPdfContratos': 'Contract PDFs',
     'organizacoes.semSupervisor': 'No supervisor',
     'organizacoes.abaAcoes': 'Actions',
     'organizacoes.abaEditar': 'Edit',
@@ -868,6 +881,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.LIMITE_PLANO': 'Plan limit warning',
     'emails.descricao.LIMITE_PLANO':
       'Notifies the supervisor when the organization is approaching a limit of its plan.',
+    'emails.titulo.TROCA_PLANO': 'Plan change',
+    'emails.descricao.TROCA_PLANO':
+      'Notifies the supervisor when the organization\'s plan is changed by the Backoffice.',
 
     'planos.titulo': 'Plans',
     'planos.subtitulo':
@@ -877,6 +893,8 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'planos.checklistsAprovadosMes': 'Checklists approved/month',
     'planos.tarefasFinalizadasMes': 'Tasks completed/month',
     'planos.fotosPorPergunta': 'Photos per question',
+    'planos.contratos': 'Contracts',
+    'planos.documentosPorContrato': 'Documents per contract',
     'planos.mapa': 'Map',
     'planos.relatorios': 'Reports',
     'planos.alertasEmail': 'Email alerts',
@@ -1014,6 +1032,7 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'organizacoes.colLocaisAtivos': 'Sedi attive',
     'organizacoes.colUsuariosAtivos': 'Utenti attivi',
     'organizacoes.colChecklistsPublicados': 'Checklist pubblicate',
+    'organizacoes.colPdfContratos': 'PDF dei contratti',
     'organizacoes.semSupervisor': 'Senza supervisore',
     'organizacoes.abaAcoes': 'Azioni',
     'organizacoes.abaEditar': 'Modifica',
@@ -1172,6 +1191,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.LIMITE_PLANO': 'Avviso di limite del piano',
     'emails.descricao.LIMITE_PLANO':
       'Avvisa il supervisore quando l\'organizzazione si avvicina a un limite del piano sottoscritto.',
+    'emails.titulo.TROCA_PLANO': 'Cambio di piano',
+    'emails.descricao.TROCA_PLANO':
+      'Avvisa il supervisore quando il piano dell\'organizzazione viene modificato dal Backoffice.',
 
     'planos.titulo': 'Piani',
     'planos.subtitulo':
@@ -1181,6 +1203,8 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'planos.checklistsAprovadosMes': 'Checklist approvate/mese',
     'planos.tarefasFinalizadasMes': 'Attività completate/mese',
     'planos.fotosPorPergunta': 'Foto per domanda',
+    'planos.contratos': 'Contratti',
+    'planos.documentosPorContrato': 'Documenti per contratto',
     'planos.mapa': 'Mappa',
     'planos.relatorios': 'Report',
     'planos.alertasEmail': 'Avvisi via e-mail',
@@ -1319,6 +1343,7 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'organizacoes.colLocaisAtivos': 'Sedes activas',
     'organizacoes.colUsuariosAtivos': 'Usuarios activos',
     'organizacoes.colChecklistsPublicados': 'Checklists publicados',
+    'organizacoes.colPdfContratos': 'PDF de contratos',
     'organizacoes.semSupervisor': 'Sin supervisor',
     'organizacoes.abaAcoes': 'Acciones',
     'organizacoes.abaEditar': 'Editar',
@@ -1476,6 +1501,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.LIMITE_PLANO': 'Aviso de límite del plan',
     'emails.descricao.LIMITE_PLANO':
       'Avisa al supervisor cuando la organización se acerca a un límite del plan contratado.',
+    'emails.titulo.TROCA_PLANO': 'Cambio de plan',
+    'emails.descricao.TROCA_PLANO':
+      'Avisa al supervisor cuando el plan de la organización es modificado por el Backoffice.',
 
     'planos.titulo': 'Planes',
     'planos.subtitulo':
@@ -1485,6 +1513,8 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'planos.checklistsAprovadosMes': 'Checklists aprobados/mes',
     'planos.tarefasFinalizadasMes': 'Tareas finalizadas/mes',
     'planos.fotosPorPergunta': 'Fotos por pregunta',
+    'planos.contratos': 'Contratos',
+    'planos.documentosPorContrato': 'Documentos por contrato',
     'planos.mapa': 'Mapa',
     'planos.relatorios': 'Informes',
     'planos.alertasEmail': 'Alertas por correo',
@@ -1623,6 +1653,7 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'organizacoes.colLocaisAtivos': 'Sites actifs',
     'organizacoes.colUsuariosAtivos': 'Utilisateurs actifs',
     'organizacoes.colChecklistsPublicados': 'Checklists publiées',
+    'organizacoes.colPdfContratos': 'PDF des contrats',
     'organizacoes.semSupervisor': 'Sans superviseur',
     'organizacoes.abaAcoes': 'Actions',
     'organizacoes.abaEditar': 'Modifier',
@@ -1782,6 +1813,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.LIMITE_PLANO': 'Avertissement de limite du forfait',
     'emails.descricao.LIMITE_PLANO':
       'Prévient le superviseur lorsque l\'organisation approche d\'une limite de son forfait.',
+    'emails.titulo.TROCA_PLANO': 'Changement de forfait',
+    'emails.descricao.TROCA_PLANO':
+      'Prévient le superviseur lorsque le forfait de l\'organisation est modifié par le Backoffice.',
 
     'planos.titulo': 'Forfaits',
     'planos.subtitulo':
@@ -1791,6 +1825,8 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'planos.checklistsAprovadosMes': 'Checklists approuvées/mois',
     'planos.tarefasFinalizadasMes': 'Tâches terminées/mois',
     'planos.fotosPorPergunta': 'Photos par question',
+    'planos.contratos': 'Contrats',
+    'planos.documentosPorContrato': 'Documents par contrat',
     'planos.mapa': 'Carte',
     'planos.relatorios': 'Rapports',
     'planos.alertasEmail': 'Alertes par e-mail',

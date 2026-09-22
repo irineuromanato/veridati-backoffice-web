@@ -104,7 +104,7 @@ export default function JobsPage() {
         <div
           key={job.nome}
           className="cartao"
-          style={{ maxWidth: 640, marginBottom: 16, opacity: job.habilitado ? 1 : 0.7 }}
+          style={{ width: '100%', marginBottom: 16, opacity: job.habilitado ? 1 : 0.7 }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
