@@ -230,6 +230,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'jobs.titulo.EXPORTACAO_DADOS': 'Processar exportações pendentes',
     'jobs.descricao.EXPORTACAO_DADOS':
       'Gera o zip de cada exportação de dados pendente e manda e-mail avisando que ficou pronta. Roda a cada 2 minutos.',
+    'jobs.titulo.EXTRATO_MENSAL': 'Extrato mensal de consumo',
+    'jobs.descricao.EXTRATO_MENSAL':
+      'Todo dia 1º às 03:00, grava o consumo do mês anterior de cada organização e envia o PDF por e-mail.',
 
     // ---- e-mails ----
     'emails.titulo': 'E-mails',
@@ -270,6 +273,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.TROCA_PLANO': 'Mudança de plano',
     'emails.descricao.TROCA_PLANO':
       'Avisa o supervisor quando o plano da organização é alterado pelo Backoffice.',
+    'emails.titulo.EXTRATO_MENSAL_CONSUMO': 'Extrato mensal de consumo',
+    'emails.descricao.EXTRATO_MENSAL_CONSUMO':
+      'Envia todo início de mês um PDF com o consumo (locais, pessoas, checklists, tarefas, fotos, contratos e PDFs) do mês anterior.',
 
     // ---- planos ----
     'planos.titulo': 'Planos',
@@ -540,6 +546,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'jobs.titulo.EXPORTACAO_DADOS': 'Processar exportações pendentes',
     'jobs.descricao.EXPORTACAO_DADOS':
       'Gera o zip de cada exportação de dados pendente e envia e-mail a avisar que está pronta. Corre a cada 2 minutos.',
+    'jobs.titulo.EXTRATO_MENSAL': 'Extrato mensal de consumo',
+    'jobs.descricao.EXTRATO_MENSAL':
+      'Todo dia 1º às 03:00, grava o consumo do mês anterior de cada organização e envia o PDF por e-mail.',
 
     'emails.titulo': 'E-mails',
     'emails.subtitulo':
@@ -579,6 +588,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.TROCA_PLANO': 'Mudança de plano',
     'emails.descricao.TROCA_PLANO':
       'Avisa o supervisor quando o plano da organização é alterado pelo Backoffice.',
+    'emails.titulo.EXTRATO_MENSAL_CONSUMO': 'Extrato mensal de consumo',
+    'emails.descricao.EXTRATO_MENSAL_CONSUMO':
+      'Envia todo início de mês um PDF com o consumo (locais, pessoas, checklists, tarefas, fotos, contratos e PDFs) do mês anterior.',
 
     'planos.titulo': 'Planos',
     'planos.subtitulo':
@@ -845,6 +857,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'jobs.titulo.EXPORTACAO_DADOS': 'Process pending exports',
     'jobs.descricao.EXPORTACAO_DADOS':
       'Builds the zip for each pending data export and sends an email saying it is ready. Runs every 2 minutes.',
+    'jobs.titulo.EXTRATO_MENSAL': 'Monthly usage statement',
+    'jobs.descricao.EXTRATO_MENSAL':
+      "Every 1st of the month at 03:00, records each organization's usage for the previous month and emails the PDF.",
 
     'emails.titulo': 'Emails',
     'emails.subtitulo':
@@ -884,6 +899,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.TROCA_PLANO': 'Plan change',
     'emails.descricao.TROCA_PLANO':
       'Notifies the supervisor when the organization\'s plan is changed by the Backoffice.',
+    'emails.titulo.EXTRATO_MENSAL_CONSUMO': 'Monthly usage statement',
+    'emails.descricao.EXTRATO_MENSAL_CONSUMO':
+      "Sends a PDF at the start of every month with the previous month's usage (locations, people, checklists, tasks, photos, contracts and PDFs).",
 
     'planos.titulo': 'Plans',
     'planos.subtitulo':
@@ -1154,6 +1172,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'jobs.titulo.EXPORTACAO_DADOS': 'Elabora esportazioni in sospeso',
     'jobs.descricao.EXPORTACAO_DADOS':
       'Genera lo zip di ogni esportazione di dati in sospeso e invia un\'e-mail per avvisare che è pronta. Gira ogni 2 minuti.',
+    'jobs.titulo.EXTRATO_MENSAL': 'Estratto mensile di consumo',
+    'jobs.descricao.EXTRATO_MENSAL':
+      'Ogni giorno 1 alle 03:00, registra il consumo del mese precedente di ogni organizzazione e invia il PDF via email.',
 
     'emails.titulo': 'E-mail',
     'emails.subtitulo':
@@ -1194,6 +1215,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.TROCA_PLANO': 'Cambio di piano',
     'emails.descricao.TROCA_PLANO':
       'Avvisa il supervisore quando il piano dell\'organizzazione viene modificato dal Backoffice.',
+    'emails.titulo.EXTRATO_MENSAL_CONSUMO': 'Estratto mensile di consumo',
+    'emails.descricao.EXTRATO_MENSAL_CONSUMO':
+      "Invia all'inizio di ogni mese un PDF con il consumo del mese precedente (sedi, persone, checklist, attività, foto, contratti e PDF).",
 
     'planos.titulo': 'Piani',
     'planos.subtitulo':
@@ -1464,6 +1488,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'jobs.titulo.EXPORTACAO_DADOS': 'Procesar exportaciones pendientes',
     'jobs.descricao.EXPORTACAO_DADOS':
       'Genera el zip de cada exportación de datos pendiente y envía un correo avisando de que está lista. Se ejecuta cada 2 minutos.',
+    'jobs.titulo.EXTRATO_MENSAL': 'Extracto mensual de consumo',
+    'jobs.descricao.EXTRATO_MENSAL':
+      'Todos los días 1 a las 03:00, registra el consumo del mes anterior de cada organización y envía el PDF por correo.',
 
     'emails.titulo': 'Correos',
     'emails.subtitulo':
@@ -1504,6 +1531,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.TROCA_PLANO': 'Cambio de plan',
     'emails.descricao.TROCA_PLANO':
       'Avisa al supervisor cuando el plan de la organización es modificado por el Backoffice.',
+    'emails.titulo.EXTRATO_MENSAL_CONSUMO': 'Extracto mensual de consumo',
+    'emails.descricao.EXTRATO_MENSAL_CONSUMO':
+      'Envía a comienzos de cada mes un PDF con el consumo del mes anterior (locales, personas, checklists, tareas, fotos, contratos y PDF).',
 
     'planos.titulo': 'Planes',
     'planos.subtitulo':
@@ -1776,6 +1806,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'jobs.titulo.EXPORTACAO_DADOS': 'Traiter les exportations en attente',
     'jobs.descricao.EXPORTACAO_DADOS':
       'Génère le zip de chaque exportation de données en attente et envoie un e-mail pour prévenir qu\'elle est prête. Tourne toutes les 2 minutes.',
+    'jobs.titulo.EXTRATO_MENSAL': 'Relevé mensuel de consommation',
+    'jobs.descricao.EXTRATO_MENSAL':
+      'Le 1er de chaque mois à 3h, enregistre la consommation du mois précédent de chaque organisation et envoie le PDF par e-mail.',
 
     'emails.titulo': 'E-mails',
     'emails.subtitulo':
@@ -1816,6 +1849,9 @@ export const dicionarios: Record<Idioma, Dicionario> = {
     'emails.titulo.TROCA_PLANO': 'Changement de forfait',
     'emails.descricao.TROCA_PLANO':
       'Prévient le superviseur lorsque le forfait de l\'organisation est modifié par le Backoffice.',
+    'emails.titulo.EXTRATO_MENSAL_CONSUMO': 'Relevé mensuel de consommation',
+    'emails.descricao.EXTRATO_MENSAL_CONSUMO':
+      'Envoie au début de chaque mois un PDF avec la consommation du mois précédent (sites, personnes, checklists, tâches, photos, contrats et PDF).',
 
     'planos.titulo': 'Forfaits',
     'planos.subtitulo':
