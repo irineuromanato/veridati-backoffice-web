@@ -62,6 +62,7 @@ export default function AdministradoresPage() {
               <tr>
                 <th>{t('administradores.colNome')}</th>
                 <th>{t('administradores.colEmail')}</th>
+                <th>{t('administradores.col2fa')}</th>
                 <th>{t('administradores.colCriadoEm')}</th>
                 <th style={{ width: 70 }} />
               </tr>
@@ -71,6 +72,11 @@ export default function AdministradoresPage() {
                 <tr key={a.id}>
                   <td>{a.nome}</td>
                   <td>{a.email}</td>
+                  <td>
+                    <span className={`selo ${a.totp_habilitado ? '' : 'selo-inativo'}`}>
+                      {t(a.totp_habilitado ? 'minhaConta.statusAtivado' : 'minhaConta.statusDesativado')}
+                    </span>
+                  </td>
                   <td style={{ color: '#8A8FA3' }}>{new Date(a.criado_em).toLocaleDateString()}</td>
                   <td>
                     <div style={{ display: 'flex', gap: 2 }}>

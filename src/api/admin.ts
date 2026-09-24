@@ -216,6 +216,9 @@ export interface Administrador {
   nome: string;
   email: string;
   criado_em: string;
+  // Bloco A026 (2026-09-24) -- pra mostrar o status do 2FA de qualquer
+  // admin na lista, não só o do próprio em "Minha conta".
+  totp_habilitado: boolean;
 }
 
 export async function listarAdmins(): Promise<Administrador[]> {

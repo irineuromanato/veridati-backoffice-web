@@ -131,52 +131,58 @@ export default function MinhaContaModal({ aoFechar }: { aoFechar: () => void }) 
       <div
         className="modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ width: 380, maxHeight: '85vh', overflowY: 'auto' }}
+        style={{ width: 640, maxWidth: '95vw', maxHeight: '85vh', overflowY: 'auto' }}
       >
         <h2 style={{ marginTop: 0, color: '#1B2E8A' }}>{t('minhaConta.titulo')}</h2>
 
         {carregando ? (
           <p style={{ color: '#8A8FA3' }}>{t('comum.carregando')}</p>
         ) : (
-          <>
-            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.nome')}</label>
-            <input
-              className="campo"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              style={{ marginTop: 4, marginBottom: 12 }}
-            />
+          // Bloco A026 (2026-09-24) -- duas colunas em vez de tudo
+          // empilhado: a seção de 2FA (QR, backups...) tem bastante
+          // conteúdo, e sozinha embaixo dos campos deixava o modal
+          // comprido demais. Lado a lado, cabe tudo numa tela só.
+          <div style={{ display: 'flex', gap: 24 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.nome')}</label>
+              <input
+                className="campo"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                style={{ marginTop: 4, marginBottom: 12, width: '100%' }}
+              />
 
-            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.email')}</label>
-            <input className="campo" value={admin?.email ?? ''} disabled style={{ marginTop: 4, marginBottom: 12 }} />
+              <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.email')}</label>
+              <input className="campo" value={admin?.email ?? ''} disabled style={{ marginTop: 4, marginBottom: 12, width: '100%' }} />
 
-            <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.novaSenha')}</label>
-            <CampoSenha
-              valor={novaSenha}
-              aoMudar={setNovaSenha}
-              dica={novaSenha ? t('minhaConta.dicaSenha') : undefined}
-              style={{ marginTop: 4, marginBottom: 16 }}
-            />
+              <label style={{ fontSize: 12, color: '#5B6072' }}>{t('minhaConta.novaSenha')}</label>
+              <CampoSenha
+                valor={novaSenha}
+                aoMudar={setNovaSenha}
+                dica={novaSenha ? t('minhaConta.dicaSenha') : undefined}
+                style={{ marginTop: 4, marginBottom: 16 }}
+              />
 
-            {erro && <p className="erro">{erro}</p>}
-            {sucesso && <p style={{ color: '#1E7A46', fontSize: 13, marginBottom: 12 }}>{t('minhaConta.sucesso')}</p>}
+              {erro && <p className="erro">{erro}</p>}
+              {sucesso && <p style={{ color: '#1E7A46', fontSize: 13, marginBottom: 12 }}>{t('minhaConta.sucesso')}</p>}
 
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button className="botao-secundario" onClick={aoFechar} style={{ flex: 1 }}>
-                {t('comum.fechar')}
-              </button>
-              <button
-                className="botao-primario"
-                onClick={lidarComSalvar}
-                disabled={salvando || !nome || (novaSenha.length > 0 && novaSenha.length < 8)}
-                style={{ flex: 1 }}
-              >
-                {salvando ? t('comum.salvando') : t('comum.salvar')}
-              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="botao-secundario" onClick={aoFechar} style={{ flex: 1 }}>
+                  {t('comum.fechar')}
+                </button>
+                <button
+                  className="botao-primario"
+                  onClick={lidarComSalvar}
+                  disabled={salvando || !nome || (novaSenha.length > 0 && novaSenha.length < 8)}
+                  style={{ flex: 1 }}
+                >
+                  {salvando ? t('comum.salvando') : t('comum.salvar')}
+                </button>
+              </div>
             </div>
 
             {/* Bloco A024 (2026-09-24) -- 2FA, dentro de Minha conta. */}
-            <div style={{ borderTop: '1px solid #E1E3EF', marginTop: 20, paddingTop: 16 }}>
+            <div style={{ flex: 1, minWidth: 0, borderLeft: '1px solid #E1E3EF', paddingLeft: 24 }}>
               <h3 style={{ fontSize: 13, margin: '0 0 4px', color: '#1B2E8A' }}>
                 {t('minhaConta.segurancaTitulo')}
               </h3>
@@ -208,7 +214,7 @@ export default function MinhaContaModal({ aoFechar }: { aoFechar: () => void }) 
                   <img
                     src={qrCode}
                     alt="QR code"
-                    style={{ display: 'block', margin: '8px auto', width: 160, height: 160 }}
+                    style={{ display: 'block', margin: '8px auto', width: 128, height: 128 }}
                   />
                   <p style={{ fontSize: 11, color: '#8A8FA3', marginBottom: 2 }}>{t('minhaConta.ouDigiteChave')}</p>
                   <div
@@ -312,7 +318,7 @@ export default function MinhaContaModal({ aoFechar }: { aoFechar: () => void }) 
                 </div>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
