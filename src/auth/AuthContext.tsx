@@ -1,11 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { definirTokenAdminNaApi } from '../api/client';
-import { login as loginApi, AdminLogado } from '../api/admin';
+import { login as loginApi, login2fa as login2faApi, AdminLogado } from '../api/admin';
+
+// Bloco A024 (2026-09-24) -- `entrar` agora pode devolver "falta o
+// código" em vez de terminar o login. LoginPage decide, com isso, se
+// navega direto ou mostra o segundo passo.
+type ResultadoEntrar = { pendente2fa: false } | { pendente2fa: true; tokenPendente: string };
 
 interface AuthContextValor {
   admin: AdminLogado | null;
   carregando: boolean;
-  entrar: (email: string, senha: string) => Promise<void>;
+  entrar: (email: string, senha: string) => Promise<ResultadoEntrar>;
+  confirmarLogin2fa: (tokenPendente: string, codigo: string) => Promise<void>;
   sair: () => void;
   atualizarAdminLocal: (patch: Partial<AdminLogado>) => void;
 }
@@ -29,12 +35,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCarregando(false);
   }, []);
 
-  async function entrar(email: string, senha: string) {
-    const { token, admin: adminRecebido } = await loginApi(email, senha);
+  // Só finaliza a sessão (localStorage + estado) quando já tem o token
+  // de verdade -- seja direto (sem 2FA) ou depois do segundo passo.
+  function finalizarLogin(token: string, adminRecebido: AdminLogado) {
     localStorage.setItem(CHAVE_TOKEN, token);
     localStorage.setItem(CHAVE_ADMIN, JSON.stringify(adminRecebido));
     definirTokenAdminNaApi(token);
     setAdmin(adminRecebido);
+  }
+
+  async function entrar(email: string, senha: string): Promise<ResultadoEntrar> {
+    const resultado = await loginApi(email, senha);
+    if ('pendente2fa' in resultado) {
+      return { pendente2fa: true, tokenPendente: resultado.tokenPendente };
+    }
+    finalizarLogin(resultado.token, resultado.admin);
+    return { pendente2fa: false };
+  }
+
+  async function confirmarLogin2fa(tokenPendente: string, codigo: string) {
+    const { token, admin: adminRecebido } = await login2faApi(tokenPendente, codigo);
+    finalizarLogin(token, adminRecebido);
   }
 
   function sair() {
@@ -56,7 +77,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ admin, carregando, entrar, sair, atualizarAdminLocal }}>
+    <AuthContext.Provider
+      value={{ admin, carregando, entrar, confirmarLogin2fa, sair, atualizarAdminLocal }}
+    >
       {children}
     </AuthContext.Provider>
   );

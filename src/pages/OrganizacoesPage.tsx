@@ -5,6 +5,7 @@ import {
   editarOrganizacao,
   historicoOrganizacao,
   resetarSenhaSupervisor,
+  resetar2faSupervisor,
   listarPlanos,
   trocarPlanoOrganizacao,
   historicoPlanoOrganizacao,
@@ -237,6 +238,32 @@ type Aba = 'acoes' | 'editar' | 'plano' | 'historico';
 // os codigos comerciais como aparecem pro cliente.
 const NOME_PLANO: Record<string, string> = { FREE: 'Free', BASIC: 'Basic', PRO: 'Pro', PREMIUM: 'Premium' };
 
+// Bloco A023 (2026-09-24) -- os 3 tipos de "ação com motivo obrigatório"
+// da aba Ações usam o mesmo formulário (textarea + confirmar); só o
+// texto muda. Chaves de i18n, não o texto em si -- t() é chamado no
+// componente, que tem acesso ao idioma atual.
+const TEXTOS_ACAO_PENDENTE: Record<'ATIVAR' | 'INATIVAR' | 'RESETAR_2FA', {
+  motivo: string;
+  placeholder: string;
+  confirmar: string;
+}> = {
+  ATIVAR: {
+    motivo: 'organizacoes.motivoReativacao',
+    placeholder: 'organizacoes.placeholderReativacao',
+    confirmar: 'organizacoes.confirmarReativacao',
+  },
+  INATIVAR: {
+    motivo: 'organizacoes.motivoInativacao',
+    placeholder: 'organizacoes.placeholderInativacao',
+    confirmar: 'organizacoes.confirmarInativacao',
+  },
+  RESETAR_2FA: {
+    motivo: 'organizacoes.motivoResetar2fa',
+    placeholder: 'organizacoes.placeholderResetar2fa',
+    confirmar: 'organizacoes.confirmarResetar2fa',
+  },
+};
+
 function ModalOrganizacao({
   organizacao,
   aoFechar,
@@ -257,7 +284,7 @@ function ModalOrganizacao({
   // Bloco 8 (2026-09-06) + Bloco 12 (2026-09-07): motivo obrigatório
   // pras DUAS direções agora, não só inativar -- `acaoPendente` guarda
   // qual das duas está em confirmação.
-  const [acaoPendente, setAcaoPendente] = useState<'ATIVAR' | 'INATIVAR' | null>(null);
+  const [acaoPendente, setAcaoPendente] = useState<'ATIVAR' | 'INATIVAR' | 'RESETAR_2FA' | null>(null);
   const [motivo, setMotivo] = useState('');
 
   const [nomeEditado, setNomeEditado] = useState(organizacao.nome);
@@ -312,12 +339,22 @@ function ModalOrganizacao({
     setErro(null);
     setProcessando(true);
     try {
-      await alternarAtivoOrganizacao(organizacao.id, acaoPendente === 'ATIVAR', motivo.trim());
+      if (acaoPendente === 'RESETAR_2FA') {
+        await resetar2faSupervisor(organizacao.id, motivo.trim());
+      } else {
+        await alternarAtivoOrganizacao(organizacao.id, acaoPendente === 'ATIVAR', motivo.trim());
+      }
       aoMudar();
     } catch (e: any) {
       setErro(
         e?.response?.data?.message ||
-          t(acaoPendente === 'ATIVAR' ? 'organizacoes.erroAtivar' : 'organizacoes.erroInativar'),
+          t(
+            acaoPendente === 'RESETAR_2FA'
+              ? 'organizacoes.erroResetar2fa'
+              : acaoPendente === 'ATIVAR'
+                ? 'organizacoes.erroAtivar'
+                : 'organizacoes.erroInativar',
+          ),
       );
       setProcessando(false);
     }
@@ -382,11 +419,13 @@ function ModalOrganizacao({
     ATIVAR: t('organizacoes.acaoAtivada'),
     INATIVAR: t('organizacoes.acaoInativada'),
     EDITAR: t('organizacoes.acaoEditada'),
+    RESETAR_2FA_SUPERVISOR: t('organizacoes.acaoResetou2fa'),
   };
   const corAcao: Record<string, string> = {
     ATIVAR: '#1E7A46',
     INATIVAR: '#B23A2E',
     EDITAR: '#5B6072',
+    RESETAR_2FA_SUPERVISOR: '#B26A00',
   };
 
   const ROTULO_ABA: Record<Aba, string> = {
@@ -497,23 +536,13 @@ function ModalOrganizacao({
 
                 {acaoPendente ? (
                   <div style={{ marginBottom: 12 }}>
-                    <label style={{ fontSize: 12, color: '#5B6072' }}>
-                      {t(
-                        acaoPendente === 'ATIVAR'
-                          ? 'organizacoes.motivoReativacao'
-                          : 'organizacoes.motivoInativacao',
-                      )}
-                    </label>
+                    <label style={{ fontSize: 12, color: '#5B6072' }}>{t(TEXTOS_ACAO_PENDENTE[acaoPendente].motivo)}</label>
                     <textarea
                       className="campo"
                       rows={3}
                       value={motivo}
                       onChange={(e) => setMotivo(e.target.value)}
-                      placeholder={t(
-                        acaoPendente === 'ATIVAR'
-                          ? 'organizacoes.placeholderReativacao'
-                          : 'organizacoes.placeholderInativacao',
-                      )}
+                      placeholder={t(TEXTOS_ACAO_PENDENTE[acaoPendente].placeholder)}
                       style={{ width: '100%', marginTop: 4, resize: 'vertical' }}
                       autoFocus
                     />
@@ -527,13 +556,7 @@ function ModalOrganizacao({
                         disabled={!motivo.trim() || processando}
                         style={{ flex: 1 }}
                       >
-                        {processando
-                          ? t('comum.salvando')
-                          : t(
-                              acaoPendente === 'ATIVAR'
-                                ? 'organizacoes.confirmarReativacao'
-                                : 'organizacoes.confirmarInativacao',
-                            )}
+                        {processando ? t('comum.salvando') : t(TEXTOS_ACAO_PENDENTE[acaoPendente].confirmar)}
                       </button>
                     </div>
                   </div>
@@ -549,6 +572,14 @@ function ModalOrganizacao({
                     <button className="botao-secundario" onClick={lidarComResetarSenha} disabled={processando}>
                       {t('organizacoes.trocarSenhaSupervisor')}
                     </button>
+                    {/* Bloco A023 (2026-09-24) -- só aparece quando o
+                        supervisor realmente tem 2FA ativo: resetar algo
+                        que não existe só confundiria. */}
+                    {organizacao.supervisor_totp_habilitado && (
+                      <button className="botao-secundario" onClick={() => setAcaoPendente('RESETAR_2FA')} disabled={processando}>
+                        {t('organizacoes.resetar2faSupervisor')}
+                      </button>
+                    )}
                     <button className="botao-secundario" onClick={aoFechar} disabled={processando}>
                       {t('comum.fechar')}
                     </button>

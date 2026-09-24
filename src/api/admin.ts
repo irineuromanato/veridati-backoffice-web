@@ -6,8 +6,21 @@ export interface AdminLogado {
   email: string;
 }
 
-export async function login(email: string, senha: string): Promise<{ token: string; admin: AdminLogado }> {
+// Bloco A024 (2026-09-24) -- com 2FA ativo, o login não devolve mais
+// token direto: devolve um token pendente, que só serve pra chamar
+// login2fa. `entrar()` em AuthContext.tsx decide o que fazer com cada
+// formato.
+export type RespostaLogin =
+  | { token: string; admin: AdminLogado }
+  | { pendente2fa: true; tokenPendente: string };
+
+export async function login(email: string, senha: string): Promise<RespostaLogin> {
   const resposta = await api.post('/admin/login', { email, senha });
+  return resposta.data;
+}
+
+export async function login2fa(tokenPendente: string, codigo: string): Promise<{ token: string; admin: AdminLogado }> {
+  const resposta = await api.post('/admin/login/2fa', { tokenPendente, codigo });
   return resposta.data;
 }
 
@@ -32,11 +45,14 @@ export interface OrganizacaoResumo {
   // Bloco A015 (2026-09-22), Fase 2 -- soma dos PDFs anexados aos
   // contratos desta organização, em bytes.
   pdf_bytes_usados: number;
+  // Bloco A023 (2026-09-24) -- controla se o botão de reset de
+  // emergência do 2FA aparece na tela.
+  supervisor_totp_habilitado: boolean | null;
 }
 
 export interface HistoricoOrganizacao {
   id: string;
-  acao: 'ATIVAR' | 'INATIVAR' | 'EDITAR';
+  acao: 'ATIVAR' | 'INATIVAR' | 'EDITAR' | 'RESETAR_2FA_SUPERVISOR';
   motivo: string | null;
   criado_em: string;
   criado_por_nome: string | null;
@@ -76,7 +92,16 @@ export async function resetarSenhaSupervisor(
   return resposta.data;
 }
 
-export async function buscarMinhaConta(): Promise<AdminLogado> {
+// Bloco A023 (2026-09-24) -- reset de emergência do 2FA do supervisor.
+export async function resetar2faSupervisor(
+  id: string,
+  motivo: string,
+): Promise<{ email: string; nome: string }> {
+  const resposta = await api.post(`/admin/organizacoes/${id}/resetar-2fa-supervisor`, { motivo });
+  return resposta.data;
+}
+
+export async function buscarMinhaConta(): Promise<AdminLogado & { totp_habilitado: boolean }> {
   const resposta = await api.get('/admin/minha-conta');
   return resposta.data;
 }
@@ -86,6 +111,22 @@ export async function atualizarMinhaConta(dados: {
   senhaNova?: string;
 }): Promise<AdminLogado> {
   const resposta = await api.patch('/admin/minha-conta', dados);
+  return resposta.data;
+}
+
+// Bloco A024 (2026-09-24) -- 2FA (TOTP), dentro de Minha conta.
+export async function iniciar2fa(): Promise<{ qrCode: string; segredo: string }> {
+  const resposta = await api.post('/admin/2fa/iniciar');
+  return resposta.data;
+}
+
+export async function confirmar2fa(codigo: string): Promise<{ ok: true; codigosBackup: string[] }> {
+  const resposta = await api.post('/admin/2fa/confirmar', { codigo });
+  return resposta.data;
+}
+
+export async function desativar2fa(senha: string, codigo: string): Promise<{ ok: true }> {
+  const resposta = await api.post('/admin/2fa/desativar', { senha, codigo });
   return resposta.data;
 }
 
